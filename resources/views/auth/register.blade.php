@@ -25,7 +25,7 @@
                 <label class="block font-medium text-sm text-slate-200 mb-1" for="phone">Số điện thoại</label>
                 <input id="phone" class="block mt-1 w-full bg-white border border-slate-700 text-gray-900 rounded-md shadow-sm focus:border-orange-500 focus:ring-orange-500 text-sm p-2.5 font-medium" type="text" name="phone" :value="old('phone')" required />
                 <x-input-error :messages="$errors->get('phone')" class="mt-2 text-red-400" />
-            </div>
+            </div> 
             <div>
                 <label class="block font-medium text-sm text-slate-200 mb-1" for="password">Mật khẩu</label>
                 <input id="password" class="block mt-1 w-full bg-white border border-slate-700 text-gray-900 rounded-md shadow-sm focus:border-orange-500 focus:ring-orange-500 text-sm p-2.5 font-medium" type="password" name="password" required autocomplete="new-password" />
