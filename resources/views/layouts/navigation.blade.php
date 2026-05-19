@@ -4,9 +4,9 @@
             <div class="flex">
                 <div class="shrink-0 flex items-center">
                     <a href="/" class="text-2xl tracking-wider font-sans select-none flex items-center">
-    <span class="font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">HKT</span>
-    <span class="font-extrabold text-orange-500 ml-1.5 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-orange-500 after:rounded-full">TRAVEL</span>
-</a>
+                        <span class="font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">HKT</span>
+                        <span class="font-extrabold text-orange-500 ml-1.5 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-orange-500 after:rounded-full">TRAVEL</span>
+                    </a>
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
@@ -37,6 +37,10 @@
                     @if(auth()->user()->role === 'admin')
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Tổng quan hệ thống') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
+                            {{ __('💬 Kiểm duyệt Đánh giá') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -93,6 +97,10 @@
             @if(auth()->user()->role === 'admin')
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Admin Dashboard') }}
+                </x-responsive-nav-link>
+                
+                <x-responsive-nav-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
+                    {{ __('💬 Kiểm duyệt Đánh giá') }}
                 </x-responsive-nav-link>
             @elseif(auth()->user()->role === 'partner')
                 <x-responsive-nav-link :href="route('partner.dashboard')" :active="request()->routeIs('partner.dashboard')">

@@ -5,71 +5,148 @@ namespace App\Http\Controllers;
 use App\Models\Service;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
-    // 1. Hiển thị danh sách dịch vụ ra trang chủ công cộng (Đã thêm bộ lọc tìm kiếm)
+    // 1. Hiển thị danh sách dịch vụ ra trang chủ công cộng (Đã tích hợp Reviews + Bộ lọc thông minh)
     public function index(Request $request)
     {
-        $query = Service::query();
+        // 🟢 Nạp sẵn mối quan hệ reviews và CHỈ LẤY ĐÁNH GIÁ ĐÃ DUYỆT (is_approved = 1) để tính số sao
+        $query = Service::with(['reviews' => function($q) {
+            $q->where('is_approved', 1);
+        }]);
 
-        // Nếu có gõ từ khóa tìm kiếm (theo Tên tour hoặc Địa điểm)
-        if ($request->has('search') && $request->search != '') {
-            $searchTerm = '%' . $request->search . '%';
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('title', 'like', $searchTerm)
-                  ->orWhere('location', 'like', $searchTerm);
+        // Lấy dữ liệu từ bộ lọc gửi lên
+        $location = $request->input('location');
+        $type = $request->input('type');
+
+        // BỘ LỌC 1: Ép chặt tìm kiếm chuẩn xác theo cột location (Không quét cột Title/Description)
+        if ($location && trim($location) != '') {
+            $cleanLocation = mb_strtolower(trim($location), 'UTF-8');
+            
+            $query->where(function($q) use ($cleanLocation) {
+                // Sử dụng LOWER của SQL để ép Database so khớp chữ thường, không lo lệch bộ mã hóa (Collation)
+                $q->whereRaw('LOWER(location) LIKE ?', ['%' . $cleanLocation . '%']);
+                
+                // Dự phòng trường hợp khách gõ không dấu "ha noi" vẫn quét trúng "Hà Nội"
+                $noSignLocation = \Illuminate\Support\Str::slug($cleanLocation, ' ');
+                $q->orWhereRaw('LOWER(location) LIKE ?', ['%' . $noSignLocation . '%']);
             });
         }
 
+        // BỘ LỌC 2: Phân loại thông minh (Dành cho Xe, Vé, Tour)
+        if ($type && $type != '') {
+            if ($type === 'car') {
+                $query->where(function($q) {
+                    $q->where('title', 'LIKE', '%xe%')
+                      ->orWhere('title', 'LIKE', '%ô tô%')
+                      ->orWhere('description', 'LIKE', '%thông tin xe%');
+                });
+            } elseif ($type === 'ticket') {
+                $query->where(function($q) {
+                    $q->where('title', 'LIKE', '%vé%')
+                      ->orWhere('title', 'LIKE', '%vào cổng%')
+                      ->orWhere('title', 'LIKE', '%vào cửa%')
+                      ->orWhere('title', 'LIKE', '%vinwonders%');
+                });
+            } elseif ($type === 'tour') {
+                $query->where('title', 'NOT LIKE', '%xe%')
+                  ->where('title', 'NOT LIKE', '%ô tô%')
+                  ->where('title', 'NOT LIKE', '%vé%');
+            }
+        }
+
+        // Thực thi lấy dữ liệu sau khi đã đi qua hết các bộ lọc trên
         $services = $query->latest()->get();
+
+        // Trả về view 'welcome' ở cuối hàm để tránh lỗi Exception trace
         return view('welcome', compact('services'));
     }
 
-    // TÍNH NĂNG MỚI: Xem chi tiết một Tour/Dịch vụ cụ thể
+    // 2. Xem chi tiết một Tour/Dịch vụ cụ thể
     public function show($id)
-{
-    // Sử dụng load() hoặc with() để lấy kèm danh sách khách sạn kết nối qua bảng trung gian
-    $service = Service::with('hotel')->findOrFail($id);
-    
-    return view('service-detail', compact('service'));
-}
+    {
+        // Tìm dịch vụ
+        $service = Service::findOrFail($id);
 
-    // 2. Xử lý đặt tour/dịch vụ (Bắt buộc đăng nhập mới đặt được)
+        // Bốc riêng các bình luận ĐÃ ĐƯỢC DUYỆT (is_approved = 1) kèm thông tin User viết
+        $approvedReviews = \App\Models\Review::where('service_id', $id)
+                                             ->where('is_approved', 1)
+                                             ->with('user')
+                                             ->latest()
+                                             ->get();
+
+        // Bắn cả 2 biến này sang file giao diện chi tiết
+        return view('service-detail', compact('service', 'approvedReviews'));
+    }
+
+    // 3. Xử lý đặt dịch vụ (Đã cập nhật lưu Ngày và Ghi chú)
     public function book(Request $request, $id)
     {
-        // Chặn nếu người đặt không phải là khách hàng thông thường (Tránh admin/partner tự đặt)
         if (auth()->user()->role !== 'customer') {
             return redirect()->back()->with('error', 'Chỉ tài khoản Khách hàng mới có thể đặt dịch vụ này.');
         }
 
         $service = Service::findOrFail($id);
 
+        // Kiểm tra validation cho ngày đặt lịch
         $request->validate([
             'quantity' => 'required|integer|min:1',
+            'booking_date' => 'required|date|after_or_equal:today', // Ngày đặt phải từ hôm nay trở đi
         ]);
 
-        // Tính toán tổng tiền
         $totalPrice = $service->price * $request->quantity;
 
-        // Lưu đơn hàng vào bảng orders
+        // Tiến hành tạo đơn hàng mới với đầy đủ thông tin
         Order::create([
             'user_id' => auth()->id(),
             'service_id' => $service->id,
             'quantity' => $request->quantity,
+            'booking_date' => $request->input('booking_date'), 
             'total_price' => $totalPrice,
-            'status' => 'pending', // Trạng thái chờ duyệt
-            'payment_method' => 'cod', // Thanh toán khi khởi hành/nhận phòng
+            'status' => 'pending', 
+            'payment_method' => 'cod', 
+            'note' => $request->input('note'), 
         ]);
 
-        // Thay vì ở lại trang chi tiết, đặt xong ép nhảy thẳng về Dashboard để xem hóa đơn luôn cho chuyên nghiệp
-        return redirect()->route('dashboard')->with('success', 'Đặt dịch vụ thành công! Vui lòng chờ đối tác xác nhận liên hệ.');
+        return redirect()->to('/dashboard')->with('success', 'Đặt dịch vụ thành công! Vui lòng chờ đối tác xác nhận liên hệ.');
     }
 
-    // 3. Xem danh sách lịch sử đặt tour của chính khách hàng đăng nhập
+    // 4. Xem danh sách lịch sử đặt tour tại Bảng điều khiển
     public function myOrders()
     {
+        // Lấy danh sách đơn hàng của User
         $orders = Order::where('user_id', auth()->id())->with('service')->latest()->get();
-        return view('dashboard', compact('orders')); 
+        
+        // Lấy thêm danh sách dịch vụ dự phòng tránh lỗi Undefined variable ngoài view
+        $services = Service::latest()->get(); 
+
+        return view('dashboard', compact('orders', 'services')); 
+    }
+    // 🌟 5. HÀM XỬ LÝ UPLOAD ẢNH HÓA ĐƠN CHUYỂN KHOẢN VÀ LƯU DATABASE
+    public function uploadProof(Request $request, $id)
+    {
+        // Kiểm tra xem đơn hàng đó có đúng là của ông đang đăng nhập không
+        $order = \App\Models\Order::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+
+        // Kiểm tra file ảnh truyền lên (Tối đa 2MB)
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('payment_proof')) {
+            // Lưu file ảnh vào thư mục public/storage/payment_proofs
+            $filePath = $request->file('payment_proof')->store('payment_proofs', 'public');
+            
+            // Cập nhật đường dẫn file vào database
+            $order->update([
+                'payment_proof' => $filePath
+            ]);
+
+            return redirect()->back()->with('success', 'Tải lên hóa đơn thanh toán thành công! Vui lòng chờ đối tác xác thực.');
+        }
+
+        return redirect()->back()->with('error', 'Có lỗi xảy ra, không thể tải lên tệp ảnh.');
     }
 }

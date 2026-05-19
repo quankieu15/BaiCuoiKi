@@ -8,10 +8,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    // Đổi ...$roles thành $role (nhận đích danh 1 chuỗi quyền)
+    public function handle(Request $request, Closure $next, string $role): Response
     {
-        // Kiểm tra nếu chưa đăng nhập hoặc quyền không khớp với danh sách được phép
-        if (!auth()->check() || !in_array(auth()->user()->role, $roles)) {
+        // Kiểm tra nếu chưa đăng nhập hoặc role trong DB khác với role yêu cầu ở Route
+        if (!auth()->check() || auth()->user()->role !== $role) {
             abort(403, 'Bạn không có quyền truy cập vào khu vực này.');
         }
 

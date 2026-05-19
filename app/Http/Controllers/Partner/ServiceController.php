@@ -18,7 +18,7 @@ class ServiceController extends Controller
         
         // 🔥 ĐÃ FIX: Đổi từ 'partner.services.index' thành 'partner-dashboard' 
         // (Vì file thực tế của bạn là resources/views/partner-dashboard.blade.php)
-        return view('partner-dashboard', compact('services'));
+       return view('partner.services.index', compact('services'));
     }
 
     // 2. Giao diện thêm mới dịch vụ
@@ -29,7 +29,7 @@ class ServiceController extends Controller
         
         // 🔥 ĐÃ FIX: Đổi từ 'partner.services.create' thành 'partner.create'
         // (Vì file thực tế của bạn là resources/views/partner/create.blade.php)
-        return view('partner.create', compact('categories', 'hotels'));
+       return view('partner.services.create', compact('categories', 'hotels'));
     }
 
     // 3. Xử lý lưu dịch vụ mới vào Database (Đã cập nhật lưu bảng trung gian)

@@ -8,15 +8,9 @@
     
     <style>
         @keyframes kenBurns {
-            0% {
-                transform: scale(1) translate(0, 0);
-            }
-            50% {
-                transform: scale(1.08) translate(-0.5%, -0.5%);
-            }
-            100% {
-                transform: scale(1) translate(0, 0);
-            }
+            0% { transform: scale(1) translate(0, 0); }
+            50% { transform: scale(1.08) translate(-0.5%, -0.5%); }
+            100% { transform: scale(1) translate(0, 0); }
         }
         .animate-bg-zoom {
             animation: kenBurns 25s ease-in-out infinite;
@@ -29,11 +23,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center py-2">
-    <a href="/" class="text-2xl tracking-wider font-sans select-none flex items-center group">
-        <span class="font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 drop-shadow-sm transition-all duration-300 group-hover:from-blue-700 group-hover:to-indigo-700">HKT</span>
-        <span class="font-black text-orange-500 ml-1.5 relative pb-0.5 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-orange-500 after:rounded-full after:transition-all after:duration-300 group-hover:text-orange-600 group-hover:after:bg-orange-600">TRAVEL</span>
-    </a>
-</div>
+                    <a href="/" class="text-2xl tracking-wider font-sans select-none flex items-center group">
+                        <span class="font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 drop-shadow-sm transition-all duration-300 group-hover:from-blue-700 group-hover:to-indigo-700">HKT</span>
+                        <span class="font-black text-orange-500 ml-1.5 relative pb-0.5 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-orange-500 after:rounded-full after:transition-all after:duration-300 group-hover:text-orange-600 group-hover:after:bg-orange-600">TRAVEL</span>
+                    </a>
+                </div>
                 <div class="flex items-center space-x-4">
                     @if (Route::has('login'))
                         @auth
@@ -59,7 +53,6 @@
     </nav>
 
     <div class="relative py-28 px-4 text-center overflow-hidden min-h-[480px] flex items-center justify-center">
-        
         <div class="absolute inset-0 z-0 overflow-hidden">
             <div class="w-full h-full bg-cover bg-center animate-bg-zoom transform" 
                  style="background-image: url('https://file.hstatic.net/200000851795/article/du-lich-viet-nam_a5b5777f771c44a89aee7f59151e7f95.jpg');">
@@ -69,77 +62,68 @@
         <div class="absolute inset-0 bg-slate-900/50 z-10 backdrop-blur-[1px]"></div>
 
         <div class="relative z-20 max-w-4xl mx-auto space-y-6 w-full">
-           <h1 class="text-4xl md:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">
-    Chào mừng đến với <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">HKT</span> <span class="text-orange-400">TRAVEL</span>
-</h1>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tight text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">
+                Chào mừng đến với <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">HKT</span> <span class="text-orange-400">TRAVEL</span>
+            </h1>
             <p class="text-base md:text-xl text-gray-200 max-w-2xl mx-auto font-medium drop-shadow-sm">
-                Tìm kiếm các tour du lịch trọn gói và phòng khách sạn giá tốt nhất dành cho chuyến đi của bạn
+                Tìm kiếm các dịch vụ xe tự lái, vé vui chơi và tour du lịch trọn gói với mức giá tối ưu nhất
             </p>
             
-            <div class="bg-white p-4 rounded-2xl shadow-2xl text-gray-800 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 border border-gray-100 mt-8">
-    
-    <div class="text-left px-3 flex flex-col justify-center group relative">
-        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-            📍 Địa điểm đến
-        </label>
-        <input type="text" name="search" placeholder="Hạ Long, Sapa, Đà Nẵng..." class="w-full bg-transparent focus:outline-none font-bold text-gray-700 placeholder-gray-400 py-1 text-sm border-b border-transparent focus:border-blue-500 transition">
-    </div>
-    
-    <div class="text-left px-4 border-t md:border-t-0 md:border-l border-gray-200 pt-3 md:pt-0 flex flex-col justify-center">
-        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-            ✨ Bạn muốn đặt gì?
-        </label>
-        <select name="type" class="w-full bg-transparent focus:outline-none font-bold text-gray-700 py-1 text-sm cursor-pointer border-b border-transparent focus:border-blue-500 transition">
-            <option value="">Tất cả dịch vụ</option>
-            <option value="tour">✈️ Tour du lịch trọn gói</option>
-            <option value="hotel">🏨 Khách sạn & Khu nghỉ dưỡng</option>
-            <option value="homestay">🏡 Homestay / Villa nguyên căn</option>
-        </select>
-    </div>
-    
-    <div class="flex items-center pt-2 md:pt-0 pl-2">
-        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3.5 px-6 rounded-xl transition shadow-md active:scale-[0.98] flex items-center justify-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.603 10.603z" />
-            </svg>
-            <span class="tracking-wide">Tìm kiếm ngay</span>
-        </button>
-    </div>
-    
-</div>
+            <form action="{{ route('home') }}" method="GET" class="w-full max-w-4xl mx-auto mt-8">
+                <div class="bg-white p-3 rounded-2xl md:rounded-full shadow-2xl text-gray-800 grid grid-cols-1 md:grid-cols-3 gap-3 border border-gray-100 items-center">
+                    <div class="text-left px-4 flex flex-col justify-center group relative border-b md:border-b-0 md:border-r border-gray-100 pb-2 md:pb-0">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                            📍 Địa điểm đến
+                        </label>
+                        <input type="text" name="location" value="{{ request('location') }}" placeholder="Hạ Long, Sapa, Đà Nẵng..." class="w-full bg-transparent focus:outline-none font-bold text-gray-700 placeholder-gray-400 py-0.5 text-sm">
+                    </div>
+                    
+                    <div class="text-left px-4 pb-2 md:pb-0 flex flex-col justify-center">
+                        <label class="block text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                            ✨ Bạn muốn đặt gì?
+                        </label>
+                        <select name="type" class="w-full bg-transparent focus:outline-none font-bold text-gray-700 py-0.5 text-sm cursor-pointer appearance-none">
+                            <option value="">Tất cả dịch vụ</option>
+                            <option value="tour" {{ request('type') == 'tour' ? 'selected' : '' }}>✈️ Tour du lịch trọn gói</option>
+                            <option value="car" {{ request('type') == 'car' ? 'selected' : '' }}>🚗 Thuê xe tự lái đời mới</option>
+                            <option value="ticket" {{ request('type') == 'ticket' ? 'selected' : '' }}>🎟️ Vé vui chơi / Vé tham quan</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center px-2">
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold py-3.5 px-6 rounded-xl md:rounded-full transition shadow-lg shadow-blue-600/20 active:scale-[0.98] flex items-center justify-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.603 10.603z" />
+                            </svg>
+                            <span class="tracking-widest uppercase text-xs">Tìm kiếm ngay</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
 
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl transition shadow-md whitespace-nowrap w-full md:w-auto">
-                        Tìm kiếm
-                    </button>
-                </form>
-
-                @if(request('search') || request('price_range'))
-                    <p class="text-sm text-gray-200 mt-4 bg-slate-900/60 inline-block px-4 py-1.5 rounded-full backdrop-blur-md border border-white/10 shadow-sm">
-                        <div class="flex flex-wrap items-center gap-3 bg-gray-100/80 p-3.5 rounded-2xl border border-gray-200/60 max-w-7xl mx-auto my-6 px-5 shadow-sm">
-    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 animate-pulse">
-        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> Đang lọc theo:
-    </span>
-    
-    <div class="flex items-center gap-2 bg-white border border-gray-200 shadow-sm px-3 py-1.5 rounded-xl text-sm font-medium text-gray-700 transition hover:border-gray-300">
-        <span class="text-gray-400">Từ khóa:</span> 
-        <span class="text-orange-500 font-bold">"2000000"</span>
-    </div>
-
-    <a href="/" class="ml-auto flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-bold text-xs py-2 px-3.5 rounded-xl transition shadow-sm border border-red-100">
-        <span>Xóa bộ lọc</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-    </a>
-</div>
-                    </p>
-                @endif
-            </div>
+            @if(request('location') || request('type'))
+                <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
+                    <div class="flex items-center gap-3 bg-slate-900/60 p-2 px-4 rounded-xl border border-white/10 backdrop-blur-md shadow-sm text-xs text-gray-200">
+                        <span class="font-bold uppercase tracking-wider text-teal-400">Đang tìm:</span>
+                        @if(request('location'))
+                            <span>Vị trí: <strong class="text-orange-400">"{{ request('location') }}"</strong></span>
+                        @endif
+                        @if(request('type'))
+                            <span>Phân loại: <strong class="text-orange-400">"{{ request('type') }}"</strong></span>
+                        @endif
+                    </div>
+                    <a href="/" class="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white font-bold text-xs py-2 px-3.5 rounded-xl transition shadow-md">
+                        <span>Xóa bộ lọc</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
         @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6 text-center font-semibold shadow-sm">
                 {{ session('success') }}
@@ -152,7 +136,7 @@
         @endif
 
         <h2 class="text-2xl font-extrabold mb-8 text-gray-900 tracking-tight flex items-center gap-2">
-            <span></span> Dịch vụ du lịch nổi bật cập nhật mới nhất
+            🔥 Dịch vụ du lịch nổi bật cập nhật mới nhất
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -161,7 +145,7 @@
                     <div>
                         <div class="relative overflow-hidden aspect-video bg-gray-100">
                             @if($service->image)
-                                <img src="{{ asset($service->image) }}" class="h-full w-full object-cover group-hover:scale-105 transition duration-500 animate-fade-in">
+                                <img src="{{ Str::startsWith($service->image, ['http://', 'https://']) ? $service->image : asset($service->image) }}" class="h-full w-full object-cover group-hover:scale-105 transition duration-500">
                             @else
                                 <div class="h-full w-full bg-gray-200 flex items-center justify-center text-gray-400 text-sm font-medium">Không có hình ảnh</div>
                             @endif
@@ -171,11 +155,29 @@
                         </div>
 
                         <div class="p-5 space-y-2">
-                            <h3 class="font-extrabold text-lg text-gray-900 line-clamp-2 leading-snug group-hover:text-blue-600 transition" title="{{ $service->title }}">
+                            <h3 class="font-extrabold text-lg text-gray-900 line-clamp-2 leading-snug group-hover:text-blue-600 transition h-[54px]" title="{{ $service->title }}">
                                 {{ $service->title }}
                             </h3>
-                            <p class="text-gray-500 text-sm line-clamp-3 leading-relaxed">
-                                {{ $service->description }}
+
+                           <div class="flex items-center gap-1.5 text-xs text-amber-500 font-bold text-left pt-0.5">
+    @php 
+        $avgRating = round($service->averageRating(), 1); 
+        $approvedCount = $service->reviews ? $service->reviews->where('is_approved', 1)->count() : 0;
+    @endphp
+    
+    @if($avgRating > 0)
+        <div class="flex items-center bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">
+            <span>⭐</span>
+            <span class="ml-1 text-slate-800 font-black">{{ $avgRating }}</span>
+        </div>
+        <span class="text-gray-400 font-normal">({{ $approvedCount }} đánh giá)</span>
+    @else
+        <span class="text-gray-400 font-normal italic">Chưa có đánh giá</span>
+    @endif
+</div>
+
+                            <p class="text-gray-500 text-sm line-clamp-3 leading-relaxed pt-1 min-h-[60px]">
+                                {!! Str::limit(strip_tags($service->description, '<h4><ul><li><b>'), 150) !!}
                             </p>
                         </div>
                     </div>
@@ -187,7 +189,7 @@
                         </div>
 
                         <a href="{{ route('services.show', $service->id) }}" class="block text-center w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all shadow-sm shadow-blue-200">
-                            Xem chi tiết lịch trình
+                            Xem chi tiết dịch vụ
                         </a>
                     </div>
                 </div>
@@ -195,23 +197,19 @@
                 <div class="col-span-full text-center py-20 bg-white rounded-2xl border border-dashed border-gray-300 p-8">
                     <div class="text-4xl mb-3">🍃</div>
                     <div class="text-gray-500 font-medium text-lg">Không tìm thấy dịch vụ du lịch phù hợp.</div>
-                    <p class="text-gray-400 text-sm mt-1">Vui lòng thử lại với từ khóa khác hoặc điều chỉnh bộ lọc mức giá.</p>
+                    <p class="text-gray-400 text-sm mt-1">Vui lòng thử lại với từ khóa khác hoặc điều chỉnh bộ lọc.</p>
                 </div>
             @endforelse
         </div>
     </main>
 
-   <footer class="bg-gray-100 text-gray-600 py-12 text-center border-t border-gray-200/80 relative w-full mt-24">
+    <footer class="bg-gray-100 text-gray-600 py-12 text-center border-t border-gray-200/80 relative w-full mt-24">
         <div class="max-w-4xl mx-auto px-6 space-y-4">
-            
             <div class="text-2xl animate-bounce inline-block opacity-80">✈️</div>
-            
             <p class="text-base md:text-lg text-gray-700 italic font-medium leading-relaxed max-w-2xl mx-auto tracking-wide">
                 "Đừng để những lo toan giữ chân bạn. Thế giới ngoài kia có muôn vàn điều kỳ diệu đang chờ đón. Đi thôi, ngại ngần chi!"
             </p>
-            
             <div class="w-12 h-[1px] bg-gray-300 mx-auto my-3"></div>
-            
             <div class="space-y-1">
                 <p class="font-black text-gray-400 text-sm tracking-widest uppercase flex items-center justify-center gap-1">
                     <span class="text-slate-600">HKT</span> <span class="text-gray-600">TRAVEL SYSTEM</span>
@@ -220,7 +218,6 @@
                     © 2026 HKT TRAVEL. Nền tảng đặt tour trực tuyến hàng đầu của bạn.
                 </p>
             </div>
-            
         </div>
     </footer>
 

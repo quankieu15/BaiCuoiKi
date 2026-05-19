@@ -4,342 +4,290 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $service->title }} - HKT TRAVEL</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <style>
-        /* CSS Layout 3 cột cố định bằng Flexbox */
-        .hkt-main-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 28px;
-            width: 100%;
-            padding: 0 32px;
-            box-sizing: border-box;
-        }
-        .hkt-col-left {
-            flex: 0 0 calc(30% - 19px);
-            max-width: calc(30% - 19px);
-        }
-        .hkt-col-center {
-            flex: 0 0 calc(42% - 19px);
-            max-width: calc(42% - 19px);
-        }
-        .hkt-col-right {
-            flex: 0 0 calc(28% - 19px);
-            max-width: calc(28% - 19px);
-        }
-
-        @media (max-width: 1024px) {
-            .hkt-col-left, .hkt-col-center, .hkt-col-right {
-                flex: 0 0 100% !important;
-                max-width: 100% !important;
-            }
-        }
-
-        /* Nghệ thuật Timeline Lịch trình */
-        .tour-schedule h4 {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: #0f172a;
-            margin-top: 1.75rem;
-            margin-bottom: 1rem;
-            padding-left: 0.85rem;
-            border-left: 4px solid #f97316;
-        }
-        .tour-schedule ul {
-            list-style-type: none;
-            padding-left: 0;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-        .tour-schedule ul::after {
-            content: "";
-            position: absolute;
-            left: 28px;
-            top: 10px;
-            bottom: 10px;
-            width: 2px;
-            background: #e2e8f0;
-            z-index: 1;
-        }
-        .tour-schedule li {
-            position: relative;
-            padding-left: 4.5rem;
-            margin-bottom: 1rem;
-            line-height: 1.6;
-            color: #475569;
-            font-size: 0.925rem;
-        }
-        .tour-schedule li b {
-            position: absolute;
-            left: 0;
-            top: 2px;
-            width: 55px;
-            text-align: center;
-            background: #f1f5f9;
-            color: #64748b;
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 2px 0;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-            z-index: 2;
-        }
-        .tour-schedule li:first-child b {
-            background: #fff7ed;
-            color: #ea580c;
-            border-color: #ffedd5;
-        }
-        
-        .tour-schedule .day-title {
-            margin-top: 2rem;
-            margin-bottom: 1.25rem;
-            color: #ffffff;
-            font-weight: 800;
-            font-size: 0.95rem;
-            background: linear-gradient(135deg, #ea580c, #f97316);
-            padding: 0.6rem 1.25rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
-            display: inline-block;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#f8fafc] text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-900 font-sans">
 
-    <header class="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-    <div class="w-full px-8 py-4 flex items-center justify-between">
+    @php
+        // 1. Nhận diện loại dịch vụ ngay từ đầu trang để đồng bộ toàn cục
+        $isCar = \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower($service->title), ['xe', 'ô tô', 'tự lái']);
+        $isTicket = \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower($service->title), ['vé', 'vinwonders', 'cổng', 'cửa']);
+    @endphp
 
-        <!-- LOGO -->
-        <a href="/" class="group flex items-center gap-4">
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/" class="text-xl font-black text-blue-600 tracking-wider">HKT <span class="text-orange-500">TRAVEL</span></a>
+            <a href="/" class="text-sm font-bold text-gray-500 hover:text-blue-600 flex items-center gap-1">
+                ↩️ Quay lại trang chủ
+            </a>
+        </div>
+    </nav>
 
-            <div class="relative">
-                <div class="absolute inset-0 bg-orange-500 blur-xl opacity-20 group-hover:opacity-40 transition duration-500 rounded-full"></div>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        
+        <div class="mb-6">
+            <span class="bg-blue-100 text-blue-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                📍 {{ $service->location }}
+            </span>
+            <h1 class="text-2xl md:text-4xl font-black text-slate-800 mt-2 leading-tight">
+                {{ $service->title }}
+            </h1>
+        </div>
 
-                <div class="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-400 flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:scale-110 group-hover:rotate-6 transition duration-500">
-                    
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2.2"
-                        stroke="currentColor"
-                        class="w-7 h-7 text-white">
-                        
-                        <path stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M2.25 19.5 9 12.75m0 0 2.25 2.25L15 11.25m-6 1.5V6.75m0 6h6.75m0 0L21.75 6"/>
-                    </svg>
+        <div class="w-full aspect-[21/9] rounded-3xl overflow-hidden shadow-md mb-8 bg-slate-200">
+            @if($service->image)
+                <img src="{{ asset($service->image) }}" class="w-full h-full object-cover">
+            @else
+                <div class="w-full h-full flex items-center justify-center text-slate-400">Chưa cập nhật hình ảnh</div>
+            @endif
+        </div>
 
-                </div>
-            </div>
-
-            <div class="flex flex-col leading-none">
-
-                <h1 class="text-2xl font-black tracking-tight text-slate-900">
-                    HKT 
-                    <span class="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
-                        TRAVEL
-                    </span>
-                </h1>
-
-                <span class="text-[10px] uppercase tracking-[0.35em] text-slate-400 font-bold mt-1">
-                    Luxury Travel Platform
-                </span>
-
-            </div>
-        </a>
-
-        <!-- BUTTON -->
-       <a href="/"
-class="flex items-center gap-2 px-5 py-3 rounded-2xl 
-bg-slate-900 hover:bg-orange-500 
-text-black font-bold text-xs uppercase tracking-widest 
-shadow-lg transition-all duration-300">
-
-    <svg xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="2.5"
-        stroke="currentColor"
-        class="w-4 h-4">
-
-        <path stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/>
-    </svg>
-
-    <span class="text-black">
-        Quay lại trang chủ
-    </span>
-
-</a>
-
-    </div>
-</header>
-
-    <main class="w-full flex-grow mb-16">
-        <div class="hkt-main-container">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
-            <div class="hkt-col-left space-y-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg w-fit border border-orange-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                        </svg>
-                        {{ $service->location }}
+            <div class="lg:col-span-2 space-y-6">
+                
+                @if($isCar)
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <h2 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">
+                            ⚙️ Thông số kỹ thuật của xe
+                        </h2>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-slate-50 p-3.5 rounded-xl text-center">
+                                <span class="block text-xs font-bold text-slate-400 uppercase">Số chỗ</span>
+                                <span class="text-base font-black text-slate-700 mt-1 block">5 - 7 Chỗ</span>
+                            </div>
+                            <div class="bg-slate-50 p-3.5 rounded-xl text-center">
+                                <span class="block text-xs font-bold text-slate-400 uppercase">Truyền động</span>
+                                <span class="text-base font-black text-slate-700 mt-1 block">Số tự động</span>
+                            </div>
+                            <div class="bg-slate-50 p-3.5 rounded-xl text-center">
+                                <span class="block text-xs font-bold text-slate-400 uppercase">Nhiên liệu</span>
+                                <span class="text-base font-black text-slate-700 mt-1 block">Xăng / Dầu</span>
+                            </div>
+                            <div class="bg-slate-50 p-3.5 rounded-xl text-center">
+                                <span class="block text-xs font-bold text-slate-400 uppercase">Đời xe</span>
+                                <span class="text-base font-black text-slate-700 mt-1 block">2022 - 2025</span>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 leading-snug tracking-tight">
-                        {{ $service->title }}
-                    </h1>
-                    
-                    <div class="flex items-center gap-2 border-t border-slate-50 pt-3 text-[11px] text-slate-400 font-medium">
-                        <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                        <span>Đại lý chính thức của HKT Travel</span>
-                    </div>
-                </div>
 
-                <div class="w-full h-[300px] md:h-[360px] overflow-hidden rounded-2xl shadow-md border border-slate-200/60 bg-slate-100 group">
-                    @if($service->image)
-                        <img src="{{ Str::startsWith($service->image, ['http://', 'https://']) ? $service->image : asset($service->image) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out" alt="{{ $service->title }}">
-                    @else
-                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e" class="w-full h-full object-cover" alt="Default image">
-                    @endif
-                </div>
-            </div>
-
-            <div class="hkt-col-center bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100">
-                <h3 class="text-base font-black text-slate-900 border-b border-slate-100 pb-4 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-orange-500">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.03 0 1.9.693 2.166 1.638m-7.377 0A48.536 48.536 0 0 1 12 3m0 0c2.917 0 5.747.294 8.5.862m-8.5-.862A48.394 48.394 0 0 0 3.81 5.41a1.98 1.98 0 0 0-1.56 1.96V18.75A2.25 2.25 0 0 0 4.5 21h8.25" />
-                    </svg>
-                    Kế Hoạch & Hành Trình Trải Nghiệm Chi Tiết
-                </h3>
-
-                @if($service->description)
-                    <div class="tour-schedule">
-                        <h4>Sơ lược điểm sáng giá</h4>
-                        <ul class="!after:hidden">
-                            <li class="!pl-6"><b class="!hidden">•</b> ✨ <b>Phương tiện:</b> Xe du lịch Limousine đưa đón cao cấp đời mới.</li>
-                            <li class="!pl-6"><b class="!hidden">•</b> ✨ <b>Lưu trú:</b> Resort/Khách sạn tiêu chuẩn 4-5 sao ưu đãi liên kết.</li>
-                            <li class="!pl-6"><b class="!hidden">•</b> ✨ <b>Ẩm thực:</b> Menu đặc sản vùng miền, buffet hải sản thượng hạng.</li>
-                        </ul>
-
-                        <div class="day-title">HÀNH TRÌNH NGÀY 1: KHỞI HÀNH & NGHỈ DƯỠNG</div>
-                        <ul>
-                            <li><b>Buổi Sáng</b> Xe đón quý khách tại điểm hẹn khởi hành, đoàn giao lưu trò chơi hoạt náo viên náo nhiệt.</li>
-                            <li><b>Buổi Trưa</b> Thưởng thức bữa trưa đậm đà bản sắc, sau đó làm thủ tục check-in nhận phòng khách sạn.</li>
-                            <li><b>Buổi Chiều</b> Tự do check-in các địa điểm danh lam nổi tiếng xung quanh khu nghỉ dưỡng.</li>
-                        </ul>
-
-                        <div class="day-title">HÀNH TRÌNH NGÀY 2: KHÁM PHÁ KỲ QUAN THIÊN NHIÊN</div>
-                        <ul>
-                            <li><b>Buổi Sáng</b> Thưởng thức điểm tâm sáng, khởi hành đi tham quan chuỗi kỳ quan thắng cảnh độc đáo.</li>
-                            <li><b>Buổi Trưa</b> Bữa trưa đại tiệc hải sản tươi sống vô cùng chất lượng ngay tại nhà hàng view biển.</li>
-                            <li><b>Buổi Chiều</b> Trải nghiệm chèo thuyền kayak mạo hiểm, tắm biển hoang sơ, teambuilding gắn kết.</li>
-                        </ul>
-
-                        <div class="day-title">HÀNH TRÌNH NGÀY 3: ĐÓN BÌNH MINH - MUA SẮM QUÀ LƯU NIỆM</div>
-                        <ul>
-                            <li><b>Buổi Sáng</b> Dậy sớm đón bình minh tuyệt đẹp, dạo chợ hải sản mua quà lưu niệm cho người thân.</li>
-                            <li><b>Buổi Trưa</b> Ăn trưa nhẹ nhàng, làm thủ tục trả phòng (Check-out) khách sạn theo quy định.</li>
-                            <li><b>Buổi Chiều</b> Xe đưa đoàn trở về điểm đón ban đầu an toàn. Hẹn gặp lại quý khách!</li>
+                    <div class="bg-amber-50/60 border border-amber-100 p-6 rounded-2xl">
+                        <h3 class="font-black text-amber-800 mb-2 flex items-center gap-1.5">📑 Thủ tục nhận xe tự lái cần có:</h3>
+                        <ul class="text-sm text-amber-900 space-y-1.5 list-disc pl-5 font-medium">
+                            <li>Căn cước công dân gắn chíp (Bản gốc đối chiếu).</li>
+                            <li>Bằng lái xe hạng B1 / B2 trở lên còn hạn.</li>
+                            <li>Tài sản thế chấp: Xe máy hoặc 15.000.000đ tiền mặt.</li>
                         </ul>
                     </div>
-                @else
-                    <div class="text-center py-12 text-slate-400">
-                        <p class="text-sm italic">Hệ thống đang đồng bộ dữ liệu lịch trình...</p>
+
+                @elseif($isTicket)
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <h2 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">
+                            ✨ Đặc điểm nổi bật của Vé
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="flex items-center gap-3 border border-slate-100 p-4 rounded-xl">
+                                <span class="text-2xl">📱</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-400 uppercase">Hình thức nhận</h4>
+                                    <p class="text-sm font-black text-slate-700">Vé điện tử (QR Code)</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 border border-slate-100 p-4 rounded-xl">
+                                <span class="text-2xl">⚡</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-400 uppercase">Xác nhận</h4>
+                                    <p class="text-sm font-black text-slate-700">Có kết quả tức thì</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 border border-slate-100 p-4 rounded-xl">
+                                <span class="text-2xl">📅</span>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-400 uppercase">Chính sách hủy</h4>
+                                    <p class="text-sm font-black text-red-500">Không hoàn hủy vé</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50/60 border border-blue-100 p-5 rounded-2xl text-sm text-blue-900 font-medium">
+                        💡 <strong>Hướng dẫn sử dụng:</strong> Sau khi hệ thống xác nhận đặt lịch, mã vé QR Code sẽ được chuẩn bị sẵn sàng. Bạn chỉ cần đưa mã quét tại quầy soát vé vào cửa công viên giải trí.
                     </div>
                 @endif
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                    <h2 class="text-lg font-black text-slate-800 pb-2 border-b border-slate-100">
+                        📝 Thông tin chi tiết dịch vụ
+                    </h2>
+                    <div class="prose max-w-none text-slate-600 leading-relaxed text-sm space-y-4">
+                        {!! $service->description !!}
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 text-left">
+                    <h3 class="text-lg font-black text-gray-900 mb-6 flex items-center gap-2">
+                        💬 Đánh giá từ khách hàng
+                    </h3>
+
+                    <div class="space-y-4 mb-8">
+                        @if(isset($approvedReviews) && $approvedReviews->count() > 0)
+                            @foreach($approvedReviews as $review)
+                                <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex gap-3 text-left">
+                                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0 text-sm">
+                                        {{ $review->user ? substr($review->user->name, 0, 1) : 'K' }}
+                                    </div>
+                                    
+                                    <div class="space-y-1 w-full">
+                                        <div class="flex items-center justify-between">
+                                            <h4 class="font-bold text-gray-800 text-sm">{{ $review->user->name ?? 'Khách hàng ẩn danh' }}</h4>
+                                            <span class="text-xs text-gray-400">
+                                                {{ $review->created_at ? $review->created_at->diffForHumans() : '' }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="text-amber-400 text-xs">
+                                            {{ str_repeat('⭐', $review->rating ?? 5) }}
+                                        </div>
+                                        
+                                        <p class="text-gray-600 text-sm mt-1 leading-relaxed">
+                                            {{ $review->comment }}
+                                        </p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="text-center py-8 text-gray-400 text-sm font-medium bg-slate-50 rounded-xl border border-dashed border-gray-200">
+                                📌 Chưa có đánh giá nào được duyệt cho dịch vụ này. Hãy là người đầu tiên chia sẻ trải nghiệm nhé!
+                            </div>
+                        @endif
+                    </div>
+
+                    <hr class="border-gray-100 my-6">
+
+                    @auth
+                        <form action="{{ route('reviews.store', $service->id) }}" method="POST" class="space-y-4 bg-slate-50/50 p-5 rounded-xl border border-dashed border-gray-200 text-left">
+                            @csrf
+                            <h4 class="font-bold text-gray-800 text-sm flex items-center gap-1">✍️ Chia sẻ trải nghiệm thực tế của bạn</h4>
+                            
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Mức độ hài lòng:</label>
+                                <select name="rating" class="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                                    <option value="5">⭐⭐⭐⭐⭐ (Tuyệt vời)</option>
+                                    <option value="4">⭐⭐⭐⭐ (Tốt)</option>
+                                    <option value="3">⭐⭐⭐ (Bình thường)</option>
+                                    <option value="2">⭐⭐ (Kém)</option>
+                                    <option value="1">⭐ (Tệ)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Nội dung bình luận:</label>
+                                <textarea name="comment" rows="3" required class="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="Dịch vụ có đúng như mô tả không? Bạn có hài lòng không?..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg transition text-xs shadow-sm">
+                                Gửi đánh giá (Chờ phê duyệt)
+                            </button>
+                        </form>
+                    @else
+                        <div class="bg-slate-50 p-4 rounded-xl text-center text-sm text-gray-500 border border-gray-100">
+                            🔒 Vui lòng <a href="{{ route('login') }}" class="text-blue-600 font-bold hover:underline">Đăng nhập</a> để viết đánh giá cho dịch vụ này.
+                        </div>
+                    @endauth
+                </div>
+
             </div>
 
-            <div class="hkt-col-right space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-5 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 right-0 h-[4px] bg-gradient-to-r from-orange-500 to-amber-500"></div>
+            <div class="lg:col-span-1 lg:sticky lg:top-24">
+                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-100 space-y-5">
+                    
                     <div>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Chi phí trọn gói</span>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-3xl font-black text-red-500 tracking-tight">{{ number_format($service->price) }} ₫</span>
-                            <span class="text-xs font-bold text-slate-400">/ hành khách</span>
+                        <span class="text-xs font-bold text-slate-400 uppercase block">Giá niêm yết từ</span>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span class="text-2xl md:text-3xl font-black text-red-500">{{ number_format($service->price) }}</span>
+                            <span class="text-sm font-bold text-red-500">đ / lượt</span>
                         </div>
                     </div>
 
-                    <div class="border-t border-slate-100 pt-4">
-                        @auth
-                            @if(auth()->user()->role === 'customer')
-                                <form action="{{ route('services.book', $service->id) }}" method="POST" class="space-y-4">
-                                    @csrf
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Số lượng người tham gia:</label>
-                                        <input type="number" name="quantity" min="1" value="1" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:border-orange-500 transition">
-                                    </div>
-                                    <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-black py-3.5 px-4 rounded-xl text-center text-xs uppercase tracking-wider shadow-md shadow-orange-500/10 transition transform active:scale-[0.98]">
-                                        Xác nhận đặt tour ngay
-                                    </button>
-                                </form>
-                            @else
-                                <div class="bg-slate-50 border border-slate-100 p-3.5 rounded-xl text-center text-[11px] text-slate-400 font-bold uppercase tracking-wide">
-                                    Chức năng dành cho tài khoản khách hàng.
-                                </div>
-                            @endif
-                        @else
-                            <div class="space-y-3">
-                                <p class="text-xs font-medium text-slate-400 text-center leading-relaxed">Bạn cần đăng nhập tài khoản thành viên để đặt lịch hành trình này.</p>
-                                <a href="{{ route('login') }}" class="block w-full bg-slate-900 text-white font-bold py-3 px-4 rounded-xl text-center text-xs uppercase tracking-widest transition-colors shadow-sm">
-                                    Đăng nhập hệ thống
-                                </a>
-                            </div>
-                        @endauth
-                    </div>
-                </div>
+                    <hr class="border-slate-100">
 
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-3">
-                    <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest flex items-center gap-1.5">Mã khuyến mãi áp dụng</h4>
-                    <div class="p-3 bg-gradient-to-br from-orange-500/5 to-amber-500/5 border border-dashed border-orange-200 rounded-xl flex items-center justify-between gap-2">
-                        <div>
-                            <p class="text-xs font-black text-orange-600 tracking-wide">HKTNEWMEMBER</p>
-                            <p class="text-[10px] text-slate-400 mt-0.5">Tặng ngay 100k vào tài khoản</p>
-                        </div>
-                        <button onclick="alert('Đã lưu mã khuyến mãi thành công!')" class="bg-orange-500 text-white font-bold text-[10px] px-3 py-2 rounded-lg transition-colors shadow-sm flex-shrink-0">
-                            Nhận mã
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
-                    <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest border-b border-slate-100 pb-2.5">Đối tác lưu trú liên kết</h4>
-                    @if($service->hotel)
-                        <div class="group block cursor-pointer">
-                            <div class="w-full h-32 overflow-hidden rounded-xl border border-slate-100 bg-slate-50 mb-3">
-                                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover" alt="{{ $service->hotel->name }}">
-                            </div>
-                            <div class="space-y-0.5">
-                                <h5 class="text-xs font-black text-slate-900 group-hover:text-orange-500 transition-colors truncate">{{ $service->hotel->name }}</h5>
-                                <p class="text-[10px] text-slate-400 flex items-center gap-0.5 truncate">📍 {{ $service->hotel->address ?? $service->hotel->location }}</p>
-                            </div>
+                    @guest
+                        <div class="bg-amber-50 text-amber-700 p-4 rounded-xl text-center text-xs font-bold border border-amber-200">
+                            🔒 Vui lòng <a href="{{ route('login') }}" class="underline text-blue-600">Đăng nhập</a> tài khoản Khách hàng để tiến hành đặt dịch vụ này.
                         </div>
                     @else
-                        <p class="text-xs text-slate-400 italic py-2 text-center">Phương án lưu trú đang được sắp xếp...</p>
-                    @endif
+                        @if(auth()->user()->role === 'customer')
+                            
+                            @if(session('success'))
+                                <div class="bg-green-50 text-green-700 p-3 rounded-xl text-xs font-bold border border-green-200">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+
+                            <form action="{{ route('services.book', $service->id) }}" method="POST" class="space-y-4">
+                                @csrf
+                                
+                                <div>
+                                    <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1">
+                                        {{ $isCar ? '🚗 Số lượng ngày thuê xe:' : ($isTicket ? '🎟/👤 Số lượng vé đặt:' : '👥 Số người tham gia:') }}
+                                    </label>
+                                    <input type="number" name="quantity" id="quantity" value="1" min="1" class="w-full bg-slate-50 rounded-xl font-black text-slate-800 text-center py-2.5 border border-slate-200/60 focus:outline-none focus:border-blue-500 transition text-sm">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1">
+                                        📅 {{ $isCar ? 'Ngày nhận xe:' : ($isTicket ? 'Ngày sử dụng vé:' : 'Ngày khởi hành Tour:') }}
+                                    </label>
+                                    <input type="date" name="booking_date" required min="{{ date('Y-m-d') }}" class="w-full bg-slate-50 rounded-xl py-2.5 px-4 text-sm font-bold text-slate-800 border border-slate-200/60 focus:outline-none focus:border-blue-500 transition">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-1">
+                                        📝 Ghi chú yêu cầu đặc biệt:
+                                    </label>
+                                    <textarea name="note" rows="3" placeholder="{{ $isCar ? 'Ví dụ: Giao xe tại sân bay Nội Bài...' : ($isTicket ? 'Ví dụ: Cần xuất hóa đơn...' : 'Ví dụ: Mình ăn chay...') }}" class="w-full bg-slate-50 rounded-xl py-2 px-3 text-xs font-medium text-slate-700 border border-slate-200/60 focus:outline-none focus:border-blue-500 transition resize-none"></textarea>
+                                </div>
+
+                                <div class="bg-slate-50 p-3 rounded-xl flex justify-between items-center text-sm">
+                                    <span class="font-bold text-slate-500">Tổng tạm tính:</span>
+                                    <span id="total-display" class="font-black text-slate-800 text-base">
+                                        {{ number_format($service->price) }} đ
+                                    </span>
+                                </div>
+
+                                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black py-3.5 rounded-xl shadow-lg shadow-blue-500/20 text-xs uppercase tracking-wider transition active:scale-[0.98]">
+                                    ⚡ Tiến hành đặt ngay
+                                </button>
+                            </form>
+                        @else
+                            <div class="bg-gray-50 text-gray-500 p-4 rounded-xl text-center text-xs font-bold border border-gray-200">
+                                👋 Bạn đang đăng nhập quyền [{{ auth()->user()->role }}]. Chỉ tài khoản Khách hàng mới có quyền thực hiện đặt dịch vụ.
+                            </div>
+                        @endif
+                    @endguest
+
+                    <p class="text-[10px] text-center text-slate-400 font-medium leading-relaxed">
+                        Hệ thống sẽ ghi nhận lịch và liên hệ lại ngay với quý khách qua SĐT tài khoản cá nhân để xác nhận.
+                    </p>
                 </div>
             </div>
 
         </div>
     </main>
 
-    <footer class="bg-slate-900 text-slate-400 py-10 text-center border-t border-slate-800 w-full">
-        <div class="max-w-4xl mx-auto px-6 space-y-3">
-            <p class="text-xs md:text-sm text-slate-400 italic font-medium max-w-xl mx-auto leading-relaxed">
-                "Đừng để những lo toan giữ chân bạn. Thế giới ngoài kia có muôn vàn điều kỳ diệu đang chờ đón."
-            </p>
-            <div class="w-6 h-[1px] bg-slate-800 mx-auto my-2"></div>
-            <div class="space-y-0.5">
-                <p class="font-black text-slate-500 text-[9px] tracking-widest uppercase">HKT TRAVEL SYSTEM</p>
-                <p class="text-[9px] text-slate-600 font-medium">© 2026 HKT TRAVEL. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <script>
+        const price = {{ $service->price }};
+        const input = document.getElementById('quantity');
+        const display = document.getElementById('total-display');
 
+        if (input) {
+            input.addEventListener('input', function() {
+                let qty = parseInt(this.value) || 1;
+                if(qty < 1) qty = 1;
+                const total = price * qty;
+                display.innerText = total.toLocaleString('vi-VN') + ' đ';
+            });
+        }
+    </script>
 </body>
 </html>

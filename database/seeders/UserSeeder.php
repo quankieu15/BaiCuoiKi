@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
 
         // 2. Tạo tài khoản Đối tác dịch vụ mẫu
         User::create([
-            'name' => 'Công ty Lữ hành Saigontourist',
+            'name' => 'HKT TRAVEL',
             'email' => 'partner@gmail.com',
             'password' => Hash::make('password'),
             'role' => 'partner',
