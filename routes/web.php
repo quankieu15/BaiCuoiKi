@@ -39,13 +39,13 @@ Route::middleware('auth')->group(function () {
 
     /*
     |------------------------------------------
-    | DASHBOARD ROUTER (FIX CHÍNH)
+    | DASHBOARD ROUTER (FIX CHÍNH VÀ ĐẶT BẪY KIỂM TRA)
     |------------------------------------------
-    */
+    |*/
     Route::get('/dashboard', function () {
 
         $user = auth()->user();
-        $role = strtolower(trim($user->role));
+        $role = strtolower(trim($user->role ?? ''));
 
         if ($role === 'admin') {
             return redirect()->route('admin.dashboard');
@@ -58,7 +58,6 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('customer.dashboard');
 
     })->name('dashboard');
-
 
     /*
     |------------------------------------------
@@ -176,4 +175,4 @@ Route::middleware('auth')->group(function () {
 
 });
 
-require __DIR__.'/auth.php';
+require __DIR__.'/auth.php';    
