@@ -31,19 +31,21 @@ class AuthenticatedSessionController extends Controller
 
     $request->session()->regenerate();
 
-    // 🚀 LẤY USER VỪA ĐĂNG NHẬP ĐỂ ÉP PHÂN LUỒNG CỨNG, BỎ QUA INTENDED CỦA LARAVEL
+    // Lấy thông tin user vừa đăng nhập thành công
     $user = auth()->user();
-    
-    if ($user->role === 'admin') {
+    $role = strtolower(trim($user->role ?? ''));
+
+    // Ép phân luồng cứng ngay tại Controller xử lý đăng nhập, không dùng ->intended()
+    if ($role === 'admin') {
         return redirect()->route('admin.dashboard');
     } 
     
-    if ($user->role === 'partner') {
+    if ($role === 'partner') {
         return redirect()->route('partner.dashboard');
     }
 
-    // Nếu là customer bình thường thì cho về trang dashboard (hoặc trang đơn hàng của họ)
-    return redirect()->route('dashboard');
+    // Nếu là customer hoặc các quyền khác thì về trang customer dashboard
+    return redirect()->route('customer.dashboard');
 }
 
     /**

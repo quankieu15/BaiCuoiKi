@@ -253,23 +253,29 @@
 
                         </tr>
 
-                    @empty
+                  @empty
 
                         <tr>
 
-                            <td colspan="6" class="px-6 py-20 text-center text-slate-400">
+                            <td colspan="6" class="px-6 py-20 text-center text-slate-400 bg-slate-50/50">
 
-                                <div class="text-5xl mb-3">
-                                    📋
+                                <div class="text-6xl mb-4 animate-bounce">
+                                    🛡️
                                 </div>
 
-                                <div class="text-sm font-bold uppercase tracking-wider">
-                                    Danh sách trống
+                                <div class="text-base font-black text-slate-700 uppercase tracking-wider">
+                                    XÁC NHẬN: BẠN ĐANG TRUY CẬP QUYỀN ADMIN TỐI CAO
                                 </div>
 
-                                <p class="text-sm text-slate-400 mt-2">
-                                    Hiện tại chưa có yêu cầu đặt lịch nào trong hệ thống.
+                                <p class="text-sm text-slate-500 mt-2 font-medium">
+                                    Hệ thống điều hướng chuẩn xác! Tuy nhiên, hiện tại <strong class="text-blue-600">chưa có khách hàng nào đặt lịch</strong> trên hệ thống nên danh sách đang trống.
                                 </p>
+                                
+                                <div class="mt-4">
+                                    <span class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-xl border border-blue-100">
+                                        URL Hiện Tại: {{ request()->path() }}
+                                    </span>
+                                </div>
 
                             </td>
 

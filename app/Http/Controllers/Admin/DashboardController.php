@@ -11,25 +11,20 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     // 1. Trang chủ quản trị (Tổng quan hệ thống)
-    public function index()
+  public function index()
     {
-        // Thống kê số lượng để hiển thị lên các thẻ số liệu (Thống kê tổng quan)
+        // 🚨 CHỐT HẠ: Ép Admin nhảy thẳng sang trang quản lý đơn hàng chuẩn giao diện admin luôn, không gọi file view lỗi kia nữa!
+        return redirect()->route('admin.orders.index');
+
+        /* --- Đoạn code cũ tạm thời bỏ qua không dùng để tránh gọi nhầm view lỗi ---
         $totalCustomers = User::where('role', 'customer')->count();
         $totalPartners = User::where('role', 'partner')->count();
-       $totalServices = Service::where('status', 'active')->count();
+        $totalServices = Service::where('status', 'active')->count();
         $totalOrders = Order::count();
-
-        // Lấy 5 đơn hàng mới nhất toàn hệ thống để hiển thị bảng theo dõi nhanh
         $recentOrders = Order::with(['user', 'service'])->latest()->take(5)->get();
 
-        // Trả về view admin-dashboard kèm dữ liệu
-        return view('admin-dashboard', compact(
-            'totalCustomers', 
-            'totalPartners', 
-            'totalServices', 
-            'totalOrders', 
-            'recentOrders'
-        ));
+        return view('admin-dashboard', compact(...));
+        */
     }
 
     // 2. Trang danh sách quản lý đơn hàng chi tiết

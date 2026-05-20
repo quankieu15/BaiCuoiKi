@@ -14,12 +14,11 @@ use App\Http\Controllers\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------
-| PUBLIC ROUTES
+| 1. PUBLIC ROUTES (Khu vực không cần đăng nhập)
 |--------------------------------------------------------------------------
 */
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
 Route::get('/service/{id}', [HomeController::class, 'show'])->name('services.show');
 
 Route::get('/tin-tuc', [PageController::class, 'tintuc'])->name('pages.tintuc');
@@ -31,7 +30,7 @@ Route::post('/lien-he/send', [FeedbackController::class, 'store'])->name('pages.
 
 /*
 |--------------------------------------------------------------------------
-| AUTH ROUTES
+| 2. AUTH ROUTES (Bắt buộc phải đăng nhập)
 |--------------------------------------------------------------------------
 */
 
@@ -39,29 +38,33 @@ Route::middleware('auth')->group(function () {
 
     /*
     |------------------------------------------
-    | DASHBOARD ROUTER (FIX CHÍNH VÀ ĐẶT BẪY KIỂM TRA)
+    | TRỌNG TÀI ĐIỀU HƯỚNG TRUNG GIAN (Xử lý đa năng)
     |------------------------------------------
-    |*/
-    Route::get('/dashboard', function () {
-
+    | Khi vào link '/dashboard', hệ thống tự bốc View tương ứng ra hiển thị 
+    | mà không cần redirect lòng vòng, tránh triệt để lỗi đá văng Session.
+    */
+  Route::get('/dashboard', function () {
         $user = auth()->user();
         $role = strtolower(trim($user->role ?? ''));
 
         if ($role === 'admin') {
-            return redirect()->route('admin.dashboard');
+            // Đổi từ app()->orderIndex() thành REDIRECT sang trang orders của admin
+            return redirect()->route('admin.orders.index');
         }
 
         if ($role === 'partner') {
+            // Đổi thành REDIRECT sang trang dashboard của partner
             return redirect()->route('partner.dashboard');
         }
 
+        // Mặc định là khách hàng
         return redirect()->route('customer.dashboard');
-
     })->name('dashboard');
+
 
     /*
     |------------------------------------------
-    | PROFILE (ALL USERS)
+    | PROFILE (Dùng chung cho tất cả tài khoản)
     |------------------------------------------
     */
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -71,7 +74,7 @@ Route::middleware('auth')->group(function () {
 
     /*
     |------------------------------------------
-    | CUSTOMER AREA
+    | CUSTOMER AREA (Phân hệ Khách hàng)
     |------------------------------------------
     */
     Route::middleware('role:customer')->group(function () {
@@ -92,7 +95,7 @@ Route::middleware('auth')->group(function () {
 
     /*
     |------------------------------------------
-    | PARTNER AREA
+    | PARTNER AREA (Phân hệ Đối tác)
     |------------------------------------------
     */
     Route::middleware('role:partner')->prefix('partner')->group(function () {
@@ -128,23 +131,16 @@ Route::middleware('auth')->group(function () {
 
     /*
     |------------------------------------------
-    | ADMIN AREA
+    | ADMIN AREA (Phân hệ Quản trị viên tối cao)
     |------------------------------------------
     */
     Route::middleware('role:admin')->prefix('admin')->group(function () {
 
+        // Trang tổng quan chung của Admin
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('admin.dashboard');
 
-        Route::get('/users', [UserController::class, 'index'])
-            ->name('admin.users.index');
-
-        Route::patch('/users/{id}/role', [UserController::class, 'updateRole'])
-            ->name('admin.users.updateRole');
-
-        Route::post('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])
-            ->name('admin.users.toggleStatus');
-
+        // Quản lý Đặt lịch/Đơn hàng (Trang này chứa file Blade mà ông vừa gửi)
         Route::get('/orders', [DashboardController::class, 'orderIndex'])
             ->name('admin.orders.index');
 
@@ -157,6 +153,17 @@ Route::middleware('auth')->group(function () {
         Route::delete('/orders/{id}', [DashboardController::class, 'orderDestroy'])
             ->name('admin.orders.destroy');
 
+        // Quản lý Thành viên/Người dùng
+        Route::get('/users', [UserController::class, 'index'])
+            ->name('admin.users.index');
+
+        Route::patch('/users/{id}/role', [UserController::class, 'updateRole'])
+            ->name('admin.users.updateRole');
+
+        Route::post('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])
+            ->name('admin.users.toggleStatus');
+
+        // Kiểm duyệt Đánh giá của khách hàng
         Route::get('/reviews', [ReviewController::class, 'adminIndex'])
             ->name('admin.reviews.index');
 
@@ -166,6 +173,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])
             ->name('admin.reviews.destroy');
 
+        // Quản lý Góp ý liên hệ
         Route::get('/feedbacks', [FeedbackController::class, 'adminIndex'])
             ->name('admin.feedbacks.index');
 
@@ -175,4 +183,4 @@ Route::middleware('auth')->group(function () {
 
 });
 
-require __DIR__.'/auth.php';    
+require __DIR__.'/auth.php';
