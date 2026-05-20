@@ -44,7 +44,7 @@
             <span>
                 Hotline:
                 <span class="text-sky-900 font-extrabold tracking-widest bg-white/80 px-2 py-0.5 rounded-md border border-sky-300">
-                    19004518
+                    19006868
                 </span>
             </span>
 
