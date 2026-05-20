@@ -22,22 +22,28 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
+   /**
+     * Handle an incoming authentication request.
+     */
     public function store(LoginRequest $request): RedirectResponse
 {
     $request->authenticate();
 
     $request->session()->regenerate();
 
-    // LẤY THÔNG TIN USER VỪA ĐĂNG NHẬP ĐỂ ĐIỀU HƯỚNG ĐÚNG KHU VỰC
+    // 🚀 LẤY USER VỪA ĐĂNG NHẬP ĐỂ ÉP PHÂN LUỒNG CỨNG, BỎ QUA INTENDED CỦA LARAVEL
     $user = auth()->user();
     
     if ($user->role === 'admin') {
-        return redirect()->intended(route('admin.dashboard'));
-    } elseif ($user->role === 'partner') {
-        return redirect()->intended(route('partner.dashboard'));
+        return redirect()->route('admin.dashboard');
+    } 
+    
+    if ($user->role === 'partner') {
+        return redirect()->route('partner.dashboard');
     }
 
-    return redirect()->intended(route('dashboard'));
+    // Nếu là customer bình thường thì cho về trang dashboard (hoặc trang đơn hàng của họ)
+    return redirect()->route('dashboard');
 }
 
     /**

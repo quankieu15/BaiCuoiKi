@@ -1,187 +1,320 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-2xl font-bold text-blue-900 tracking-wide uppercase">
-            {{ __('Lịch sử đặt Tour / Khách sạn của bạn') }}
-        </h2>
-    </x-slot>
 
-    <div class="py-12 bg-gray-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-md sm:rounded-2xl p-6 border border-gray-100">
-                
-                <h3 class="text-xl font-extrabold mb-6 text-gray-800 border-b pb-3 flex items-center gap-2">
-                    🗺️ Danh sách dịch vụ đã đặt
-                </h3>
+{{-- FONT SAAS --}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-                @if(session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6 text-center font-bold shadow-sm">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if(session('error'))
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6 text-center font-bold shadow-sm">
-                        {{ session('error') }}
-                    </div>
-                @endif
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+}
 
-                <div class="overflow-x-auto rounded-xl border border-gray-200">
-                    <table class="w-full text-left text-gray-600 border-collapse bg-white">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b border-gray-200">
-                            <tr>
-                                <th class="px-6 py-4 font-bold text-center">Mã đơn</th>
-                                <th class="px-6 py-4 font-bold">Tên dịch vụ</th>
-                                <th class="px-6 py-4 font-bold text-center">Số lượng</th>
-                                <th class="px-6 py-4 font-bold text-center">Ngày sử dụng</th>
-                                <th class="px-6 py-4 font-bold">Tổng thanh toán</th>
-                                <th class="px-6 py-4 font-bold text-center">Ghi chú</th>
-                                <th class="px-6 py-4 font-bold text-center">Ngày mua đơn</th>
-                                <th class="px-6 py-4 font-bold text-center">Trạng thái đơn hàng</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @forelse($orders as $order)
-                                <tr class="bg-white hover:bg-blue-50/50 transition-colors duration-150">
-                                    <td class="px-6 py-4 text-center font-bold text-gray-400">#{{ $order->id }}</td>
-                                    
-                                    <td class="px-6 py-4 font-bold text-gray-900 max-w-[250px]">
-                                        {{ $order->service->title ?? 'Dịch vụ không tồn tại hoặc đã xóa' }}
-                                    </td>
-                                    
-                                    <td class="px-6 py-4 text-center font-bold text-gray-700">{{ $order->quantity }}</td>
-                                    
-                                    <td class="px-6 py-4 text-center font-semibold text-slate-600">
-                                        {{ $order->booking_date ? \Carbon\Carbon::parse($order->booking_date)->format('d/m/Y') : '---' }}
-                                    </td>
-                                    
-                                    <td class="px-6 py-4">
-                                        <div class="font-black text-red-600 text-base">
-                                            {{ number_format($order->total_price) }} đ
-                                        </div>
-                                        
-                                        <div class="mt-2">
-                                            @if(!$order->payment_proof)
-                                                <button onclick="openPaymentModal('{{ $order->id }}')" class="inline-flex items-center gap-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-black text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-sm transition transform active:scale-95 whitespace-nowrap cursor-pointer">
-                                                    📲 Quét QR / Gửi Bill
-                                                </button>
+/* ===== OCEAN BACKGROUND (3 LAYERS) ===== */
+.ocean-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(135deg, #dff6ff, #bfe9ff, #e6f7ff);
+    overflow: hidden;
+}
 
-                                                <div id="payment-modal-{{ $order->id }}" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm p-4 text-center overflow-y-auto">
-                                                    
-                                                    <span class="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
-                                                    
-                                                    <div class="inline-block w-full max-w-[320px] p-5 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl border border-gray-100">
-                                                        
-                                                        <h4 class="text-center text-xs font-black text-blue-700 uppercase tracking-wider mb-3 border-b pb-2">
-                                                            Thanh toán đơn hàng #{{ $order->id }}
-                                                        </h4>
+/* wave layer 1 */
+.ocean-bg::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.6), transparent 60%);
+    animation: floatWave 18s linear infinite;
+}
 
-                                                        @php
-                                                            $BANK_ID = 'MB'; 
-                                                            $ACCOUNT_NO = '1520327735200'; 
-                                                            $ACCOUNT_NAME = 'TRAN VAN KHANH'; 
-                                                            
-                                                            $AMOUNT = $order->total_price;
-                                                            $ORDER_INFO = 'HKT TRAVEL Thanh toan don hang ' . $order->id;
-                                                        @endphp
+/* wave layer 2 */
+.ocean-bg::after {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -40%;
+    left: -40%;
+    background: radial-gradient(circle at 70% 60%, rgba(255,255,255,0.4), transparent 55%);
+    animation: floatWave 25s linear infinite reverse;
+    filter: blur(20px);
+}
 
-                                                        <div class="bg-gray-50 p-2 rounded-xl border border-gray-100 mb-3 flex justify-center">
-                                                            <img src="https://img.vietqr.io/image/{{ $BANK_ID }}-{{ $ACCOUNT_NO }}-compact.png?amount={{ $AMOUNT }}&addInfo={{ urlencode($ORDER_INFO) }}&accountName={{ urlencode($ACCOUNT_NAME) }}" 
-                                                                 alt="VietQR" class="w-48 h-48 object-contain bg-white p-1 rounded-md shadow-inner">
-                                                        </div>
+@keyframes floatWave {
+    0% { transform: translate(0,0) rotate(0deg); }
+    50% { transform: translate(3%,2%) rotate(180deg); }
+    100% { transform: translate(0,0) rotate(360deg); }
+}
 
-                                                        <div class="text-[11px] text-gray-700 mb-3 space-y-0.5 bg-blue-50/60 p-2.5 rounded-xl border border-blue-100/30 font-medium">
-                                                            <p>🏦 Ngân hàng: <strong class="text-gray-900">{{ $BANK_ID }}</strong></p>
-                                                            <p>👤 Số TK: <strong class="text-gray-900">{{ $ACCOUNT_NO }}</strong></p>
-                                                            <p>💰 Số tiền: <strong class="text-red-600 font-extrabold text-xs">{{ number_format($AMOUNT) }} đ</strong></p>
-                                                        </div>
+/* shimmer loading */
+.shimmer {
+    position: relative;
+    overflow: hidden;
+}
+.shimmer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 150%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+    0% { left: -150%; }
+    100% { left: 150%; }
+}
+</style>
 
-                                                        <form action="{{ route('orders.uploadProof', $order->id) }}" method="POST" enctype="multipart/form-data" class="space-y-3">
-                                                            @csrf
-                                                            <label class="block text-[11px] font-bold text-gray-700 uppercase tracking-wider">
-                                                                📸 Đính kèm ảnh hóa đơn:
-                                                            </label>
-                                                            <input type="file" name="payment_proof" accept="image/*" required 
-                                                                   class="w-full text-[11px] text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-gray-200 rounded-lg p-1 bg-gray-50">
-                                                            
-                                                            <div class="flex gap-2 pt-1">
-                                                                <button type="button" onclick="closePaymentModal('{{ $order->id }}')" class="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2 px-3 rounded-xl transition">
-                                                                    Đóng
-                                                                </button>
-                                                                <button type="submit" class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-3 rounded-xl shadow-md transition">
-                                                                    Gửi hóa đơn
-                                                                </button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
+<div class="ocean-bg"></div>
 
-                                                </div>
+{{-- HEADER --}}
+<x-slot name="header">
+    <div class="rounded-2xl p-6 bg-white/40 backdrop-blur-xl border border-white/40 shadow-lg relative overflow-hidden">
 
-                                            @elseif($order->payment_proof)
-                                                <a href="{{ asset('storage/' . $order->payment_proof) }}" target="_blank" class="inline-flex items-center gap-0.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 underline mt-1">
-                                                    👁️ Xem hóa đơn đã gửi
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </td>
+        <div class="absolute -top-10 -right-10 w-60 h-60 bg-cyan-200 blur-3xl opacity-30 rounded-full"></div>
+        <div class="absolute -bottom-10 -left-10 w-60 h-60 bg-sky-300 blur-3xl opacity-30 rounded-full"></div>
 
-                                    <td class="px-6 py-4 text-center text-xs italic text-gray-400 max-w-[150px] truncate" title="{{ $order->note }}">
-                                        {{ $order->note ?? 'Không có' }}
-                                    </td>
+        <div class="relative">
+            <div class="text-xs font-bold text-sky-600 tracking-widest">
+                🌊 OCEAN BOOKING SYSTEM
+            </div>
 
-                                    <td class="px-6 py-4 text-center text-sm text-gray-500 font-medium">
-                                        {{ $order->created_at->format('d/m/Y') }} <br>
-                                        <span class="text-xs text-gray-400 font-normal">{{ $order->created_at->format('H:i') }}</span>
-                                    </td>
+            <h2 class="text-2xl font-black text-slate-800 mt-1">
+                🧳 Lịch sử đặt Tour / Khách sạn
+            </h2>
 
-                                    <td class="px-6 py-4 text-center">
-                                        @if($order->status === 'pending')
-                                            <span class="inline-block bg-yellow-100 text-yellow-800 text-xs font-bold px-2.5 py-1 rounded-full border border-yellow-200 whitespace-nowrap">
-                                                ⏳ Chờ đối tác duyệt
-                                            </span>
-                                        @elseif($order->status === 'confirmed' || $order->status === 'accepted' || $order->status === 'approved')
-                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full border border-blue-200 whitespace-nowrap">
-                                                ✅ Đã xác nhận
-                                            </span>
-                                        @elseif($order->status === 'completed')
-                                            <span class="inline-block bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full border border-green-200 whitespace-nowrap">
-                                                🎉 Hoàn thành
-                                            </span>
-                                        @else
-                                            <span class="inline-block bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded-full border border-red-200 whitespace-nowrap">
-                                                ❌ Đã bị hủy bỏ
-                                            </span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="px-6 py-10 text-center text-gray-400 font-medium">
-                                        Bạn chưa thực hiện đơn đặt lịch nào. Quay lại <a href="/" class="text-blue-500 hover:underline font-bold">Trang chủ</a> để khám phá ngay!
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+
+
+            <div class="mt-4 flex gap-3 text-xs font-bold text-slate-700">
+
+                <span class="px-3 py-1 rounded-full bg-white/60 shadow">
+                    📦 {{ $orders->count() }}
+                </span>
+
+                <span class="px-3 py-1 rounded-full bg-white/60 shadow">
+                    💰 {{ number_format($orders->sum('total_price')) }}đ
+                </span>
 
             </div>
         </div>
     </div>
+</x-slot>
 
-    <script>
-        function openPaymentModal(orderId) {
-            const modal = document.getElementById('payment-modal-' + orderId);
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('block'); 
-            }
-        }
+{{-- BODY --}}
+<div class="py-10 min-h-screen text-slate-700">
 
-        function closePaymentModal(orderId) {
-            const modal = document.getElementById('payment-modal-' + orderId);
-            if (modal) {
-                modal.classList.remove('block');
-                modal.classList.add('hidden');
-            }
-        }
-    </script>
+<div class="max-w-7xl mx-auto px-4">
+
+    {{-- DASHBOARD --}}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+
+        <div class="bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow hover:shadow-xl transition hover:-translate-y-1">
+            <div class="text-xs text-slate-500">📊 Tổng đơn</div>
+            <div class="text-3xl font-extrabold text-sky-600">{{ $orders->count() }}</div>
+        </div>
+
+        <div class="bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow hover:shadow-xl transition hover:-translate-y-1">
+            <div class="text-xs text-slate-500">⏳ Chờ duyệt</div>
+            <div class="text-3xl font-extrabold text-amber-500">{{ $orders->where('status','pending')->count() }}</div>
+        </div>
+
+        <div class="bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow hover:shadow-xl transition hover:-translate-y-1">
+            <div class="text-xs text-slate-500">✅ Hoàn thành</div>
+            <div class="text-3xl font-extrabold text-emerald-500">{{ $orders->where('status','completed')->count() }}</div>
+        </div>
+
+        <div class="bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow hover:shadow-xl transition hover:-translate-y-1">
+            <div class="text-xs text-slate-500">💳 Đã thanh toán</div>
+            <div class="text-3xl font-extrabold text-cyan-600">
+                {{ $orders->whereNotNull('payment_proof')->count() }}
+            </div>
+        </div>
+
+    </div>
+
+    {{-- FILTER --}}
+    <div class="bg-white/70 backdrop-blur-xl border border-white/50 rounded-2xl p-4 mb-6 shadow">
+
+        <form method="GET" class="flex gap-3">
+
+            <input type="text"
+                   name="search"
+                   value="{{ request('search') }}"
+                   placeholder="🔍 Tìm dịch vụ..."
+                   class="w-full px-4 py-2 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-sky-300">
+
+            <select name="status" class="px-3 py-2 rounded-xl border text-sm">
+
+                <option value="">Tất cả</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="accepted">Accepted</option>
+                <option value="approved">Approved</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+
+            </select>
+
+            <button class="bg-sky-500 hover:bg-sky-600 text-black px-5 rounded-xl text-sm font-bold transition">
+                Lọc
+            </button>
+
+        </form>
+
+    </div>
+
+    {{-- TABLE --}}
+    <div class="bg-white/70 backdrop-blur-xl border border-white/50 rounded-2xl overflow-hidden shadow-lg">
+
+        <div class="p-5 border-b">
+            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                🌊 Danh sách đơn hàng
+            </h3>
+        </div>
+
+        <div class="overflow-x-auto">
+
+        <table class="w-full text-sm">
+
+            <thead class="bg-sky-50 text-xs text-slate-500 uppercase">
+                <tr>
+                    <th class="p-4">Mã</th>
+                    <th>Dịch vụ</th>
+                    <th>SL</th>
+                    <th>Ngày</th>
+                    <th>Thanh toán</th>
+                    <th>Note</th>
+                    <th>Ngày tạo</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            @forelse($orders as $order)
+
+            <tr class="border-b hover:bg-sky-50/60 transition">
+
+                <td class="text-center text-slate-500 font-mono">#{{ $order->id }}</td>
+
+                <td class="font-semibold text-slate-800">
+                    {{ $order->service->title ?? 'Deleted' }}
+                </td>
+
+                <td class="text-center">{{ $order->quantity }}</td>
+
+                <td class="text-center text-xs">
+                    {{ $order->booking_date ? \Carbon\Carbon::parse($order->booking_date)->format('d/m/Y') : '---' }}
+                </td>
+
+                <td>
+                    <div class="font-bold text-sky-600">
+                        {{ number_format($order->total_price) }}đ
+                    </div>
+
+                    @if(!$order->payment_proof)
+                        <button onclick="openPaymentModal(this)"
+                            data-id="{{ $order->id }}"
+                            data-price="{{ $order->total_price }}"
+                            data-formatted-price="{{ number_format($order->total_price) }}đ"
+                            data-route="{{ route('orders.uploadProof', $order->id) }}"
+                            class="mt-1 text-xs bg-sky-500 text-black px-3 py-1 rounded-lg">
+                            QR / Upload
+                        </button>
+                    @else
+                        <a class="text-sky-600 text-xs underline"
+                           href="{{ asset('storage/'.$order->payment_proof) }}">
+                            Xem bill
+                        </a>
+                    @endif
+                </td>
+
+                <td class="text-xs text-slate-400 text-center">
+                    {{ $order->note ?? '---' }}
+                </td>
+
+                <td class="text-xs text-center">
+                    {{ $order->created_at->format('d/m/Y H:i') }}
+                </td>
+
+                <td class="text-center">
+                    @if($order->status === 'pending')
+                        <span class="px-2 py-1 bg-amber-100 text-amber-600 rounded-full text-xs">Pending</span>
+                    @elseif(in_array($order->status,['confirmed','accepted','approved']))
+                        <span class="px-2 py-1 bg-sky-100 text-sky-600 rounded-full text-xs">Confirmed</span>
+                    @elseif($order->status === 'completed')
+                        <span class="px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full text-xs">Done</span>
+                    @else
+                        <span class="px-2 py-1 bg-slate-100 text-slate-500 rounded-full text-xs">Cancel</span>
+                    @endif
+                </td>
+
+            </tr>
+
+            @empty
+                <tr>
+                    <td colspan="8" class="text-center py-10 text-slate-400">
+                        Không có đơn hàng
+                    </td>
+                </tr>
+            @endforelse
+
+            </tbody>
+
+        </table>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+
+{{-- MODAL GIỮ NGUYÊN LOGIC --}}
+<div id="global-payment-modal" class="fixed inset-0 hidden bg-black/40 backdrop-blur flex items-center justify-center">
+
+<div class="bg-white p-6 rounded-2xl w-[380px] shadow-2xl">
+
+    <img id="modal-qr-img" class="w-48 mx-auto" />
+    <p id="modal-order-price" class="text-center font-bold mt-2"></p>
+
+    <form id="modal-payment-form" method="POST" enctype="multipart/form-data">
+        @csrf
+
+        <input type="file" name="payment_proof" class="w-full mt-3 text-sm">
+
+        <button class="w-full mt-3 bg-sky-500 text-white py-2 rounded-xl">
+            Upload
+        </button>
+    </form>
+
+</div>
+</div>
+
+<script>
+function openPaymentModal(btn){
+    const id = btn.dataset.id;
+    const price = btn.dataset.price;
+    const formatted = btn.dataset.formattedPrice;
+    const route = btn.dataset.route;
+
+    document.getElementById('modal-order-price').innerText = formatted;
+    document.getElementById('modal-qr-img').src =
+    `https://img.vietqr.io/image/MB-1520327735200-compact.png?amount=${price}&addInfo=ORDER${id}`;
+
+    document.getElementById('modal-payment-form').action = route;
+
+    document.getElementById('global-payment-modal').classList.remove('hidden');
+}
+
+function closePaymentModal(){
+    document.getElementById('global-payment-modal').classList.add('hidden');
+}
+</script>
+
 </x-app-layout>

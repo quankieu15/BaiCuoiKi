@@ -21,6 +21,14 @@ class Service extends Model
     ];
 
     /**
+     * Mối quan hệ liên kết dịch vụ thuộc về một danh mục (MỚI THÊM ĐỂ SỬA LỖI 500)
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    /**
      * Định nghĩa mối quan hệ: Một Tour/Dịch vụ thuộc về một Khách sạn lưu trú (Cột hotel_id đơn lẻ)
      */
     public function hotel(): BelongsTo

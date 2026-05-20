@@ -16,7 +16,7 @@ class DashboardController extends Controller
         // Thống kê số lượng để hiển thị lên các thẻ số liệu (Thống kê tổng quan)
         $totalCustomers = User::where('role', 'customer')->count();
         $totalPartners = User::where('role', 'partner')->count();
-        $totalServices = Service::count();
+       $totalServices = Service::where('status', 'active')->count();
         $totalOrders = Order::count();
 
         // Lấy 5 đơn hàng mới nhất toàn hệ thống để hiển thị bảng theo dõi nhanh
