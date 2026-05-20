@@ -288,7 +288,7 @@ body {
 
         <input type="file" name="payment_proof" class="w-full mt-3 text-sm">
 
-        <button class="w-full mt-3 bg-sky-500 text-white py-2 rounded-xl">
+        <button class="w-full mt-3 bg-sky-500 text-black py-2 rounded-xl">
             Upload
         </button>
     </form>
