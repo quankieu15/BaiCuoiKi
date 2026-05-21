@@ -9,18 +9,17 @@ use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
-    // 1. Hiển thị danh sách dịch vụ ra trang chủ (Phân tách Độc lập: Tour, Vé, Xe, Khách sạn)
+    // 1. Hiển thị danh sách dịch vụ ra trang chủ (Xử lý lọc MAP chuẩn khít theo ID Database của ông Đức)
     public function index(Request $request)
     {
         // 🟢 Nạp sẵn mối quan hệ reviews và CHỈ LẤY ĐÁNH GIÁ ĐÃ DUYỆT (is_approved = 1) để tính số sao
-        $query = Service::with(['reviews' => function($q) {
-            $q->where('is_approved', 1);
-        }]);
+       $query = Service::with(['reviews' => function($q) {
+    $q->where('is_visible', 1);
+}]);
 
         // Lấy dữ liệu bộ lọc từ URL lên
         $location = $request->input('location');
-        $type = $request->input('type');         // Tham số từ tab xe/vé/khách sạn (?type=car, ?type=ticket, ?type=hotel)
-        $category = $request->input('category'); // Tham số từ tab tour (?category=trong_nuoc, ?category=nuoc_ngoai)
+        $type = $request->input('type'); 
 
         // =========================================================================
         // BỘ LỌC 1: Tìm kiếm chính xác theo địa điểm (Location)
@@ -37,38 +36,35 @@ class HomeController extends Controller
         }
 
         // =========================================================================
-       // =========================================================================
-        // BỘ LỌC 2: PHÂN LOẠI DỊCH VỤ TUYỆT ĐỐI - CHỐNG LẪN LỘN KHÁCH SẠN
+        // BỘ LỌC 2: PHÂN LOẠI DỊCH VỤ - MAP CHUẨN KHÍT 100% THEO ID ẢNH DATABASE
         // =========================================================================
-        
-        // 1. Nếu người dùng chọn Tab Xe tự lái
-        if ($type === 'car') {
-    $query->where('category_id', 4);
-}
+        if ($type && trim($type) != '') {
+            switch ($type) {
+                case 'domestic_tour':
+                    // Theo ảnh DB: ID số 3 chính là Tour trong nước (Tây Bắc, Phú Quốc...)
+                    $query->where('category_id', 3);
+                    break;
 
-elseif ($type === 'ticket') {
-    $query->where('category_id', 3);
-}
+                case 'international_tour':
+                    // Theo ảnh DB: ID số 4 chính là Tour nước ngoài (Singapore, Hàn, Nhật...)
+                    $query->where('category_id', 4);
+                    break;
 
-elseif ($type === 'tour') {
-    $query->where('category_id', 1)
-          ->whereDoesntHave('hotels');
-}
+                case 'hotel':
+                    // Theo ảnh DB: ID số 5 chính là Khách sạn & Resort (Amanoi, Six Senses...)
+                    $query->where('category_id', 5);
+                    break;
 
-elseif ($type === 'hotel') {
-    $query->whereHas('hotels');
-}
+                case 'ticket':
+                    // Theo ảnh DB: ID số 2 chính là Vé (Sun World, VinWonders...)
+                    $query->where('category_id', 2);
+                    break;
 
-        // 4. Nếu người dùng bấm vào Tab "Tour Trong Nước" hoặc "Tour Nước Ngoài"
-        elseif ($category && $category != '') {
-            // Bảo vệ nghiêm ngặt: Đảm bảo chỉ lấy đúng category được truyền và loại trừ các nhóm khác
-            $query->where('category', $category)
-                  ->whereNotIn('category', ['hotel', 'car', 'ticket']);
-        }
-        
-        // 5. Nếu tìm kiếm chung loại hình "Tour du lịch trọn gói" ở thanh tìm kiếm
-        elseif ($type === 'tour') {
-            $query->whereIn('category', ['trong_nuoc', 'nuoc_ngoai']);
+                case 'car':
+                    // Theo ảnh DB: ID số 1 chính là Thuê xe tự lái (VinFast, Toyota...)
+                    $query->where('category_id', 1);
+                    break;
+            }
         }
 
         // Thực thi lấy dữ liệu sắp xếp mới nhất sau khi đi qua màng lọc chuẩn
@@ -89,10 +85,13 @@ elseif ($type === 'hotel') {
                                              ->latest()
                                              ->get();
 
-        return view('service-detail', compact('service', 'approvedReviews'));
+        // Tính điểm trung bình của các review đã duyệt để hiển thị ở trang chi tiết
+        $avgRating = $approvedReviews->count() > 0 ? round($approvedReviews->avg('rating'), 1) : 0;
+
+        return view('service-detail', compact('service', 'approvedReviews', 'avgRating'));
     }
 
-    // 3. Xử lý đặt dịch vụ (Đã cập nhật lưu Ngày và Ghi chú)
+    // 3. Xử lý đặt dịch vụ
     public function book(Request $request, $id)
     {
         if (auth()->user()->role !== 'customer') {

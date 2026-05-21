@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\FeedbackController;
@@ -135,7 +135,8 @@ Route::middleware('auth')->group(function () {
     |------------------------------------------
     */
     Route::middleware('role:admin')->prefix('admin')->group(function () {
-
+Route::post('/reviews/{id}/toggle', [ReviewController::class, 'toggle'])
+    ->name('admin.reviews.toggle');
         // Trang tổng quan chung của Admin
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('admin.dashboard');

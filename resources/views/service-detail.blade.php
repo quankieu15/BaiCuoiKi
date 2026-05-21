@@ -136,7 +136,9 @@
                     <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
                         💬 Đánh giá từ khách hàng
                     </h3>
-
+<div style="color:red; font-weight:bold;">
+    SERVICE ID: {{ $service->id }}
+</div>
                     <div class="space-y-4 mb-8">
                         @if(isset($approvedReviews) && $approvedReviews->count() > 0)
                             @foreach($approvedReviews as $review)
@@ -153,9 +155,11 @@
                                             </span>
                                         </div>
                                         
-                                        <div class="text-amber-400 text-xs tracking-wider">
-                                            {{ str_repeat('⭐', $review->rating ?? 5) }}
-                                        </div>
+                                        <div class="text-amber-400 text-sm tracking-wider flex gap-0.5">
+    @for ($i = 1; $i <= ($review->rating ?? 5); $i++)
+        ⭐
+    @endfor
+</div>
                                         
                                         <p class="text-slate-600 text-sm mt-2 leading-relaxed">
                                             {{ $review->comment }}
@@ -239,15 +243,24 @@
                                     <label class="block text-xs font-black text-cyan-700 uppercase tracking-wider mb-1.5">
                                         {{ $isCar ? '🚗 Số lượng ngày thuê xe:' : ($isTicket ? '🎟/👤 Số lượng vé đặt:' : '👥 Số người tham gia:') }}
                                     </label>
-                                    <input type="number" name="quantity" id="quantity" value="1" min="1" class="w-full bg-slate-50 rounded-xl font-black text-slate-800 text-center py-3 border border-cyan-100 focus:outline-none focus:border-cyan-500 transition text-sm">
+                                    <input type="number" name="quantity" id="quantity" value="1" min="1" {{ $isCar ? 'readonly class=bg-slate-100' : 'class=bg-slate-50' }} class="w-full rounded-xl font-black text-slate-800 text-center py-3 border border-cyan-100 focus:outline-none focus:border-cyan-500 transition text-sm">
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-black text-cyan-700 uppercase tracking-wider mb-1.5">
                                         📅 {{ $isCar ? 'Ngày nhận xe:' : ($isTicket ? 'Ngày sử dụng vé:' : 'Ngày khởi hành Tour:') }}
                                     </label>
-                                    <input type="date" name="booking_date" required min="{{ date('Y-m-d') }}" class="w-full bg-slate-50 rounded-xl py-3 px-4 text-sm font-bold text-slate-800 border border-cyan-100 focus:outline-none focus:border-cyan-500 transition">
+                                    <input type="date" name="booking_date" id="booking_date" required min="{{ date('Y-m-d') }}" class="w-full bg-slate-50 rounded-xl py-3 px-4 text-sm font-bold text-slate-800 border border-cyan-100 focus:outline-none focus:border-cyan-500 transition">
                                 </div>
+
+                                @if($isCar)
+                                <div>
+                                    <label class="block text-xs font-black text-cyan-700 uppercase tracking-wider mb-1.5">
+                                        📅 Ngày trả xe:
+                                    </label>
+                                    <input type="date" name="end_date" id="end_date" required min="{{ date('Y-m-d') }}" class="w-full bg-slate-50 rounded-xl py-3 px-4 text-sm font-bold text-slate-800 border border-cyan-100 focus:outline-none focus:border-cyan-500 transition">
+                                </div>
+                                @endif
 
                                 <div>
                                     <label class="block text-xs font-black text-cyan-700 uppercase tracking-wider mb-1.5">
@@ -283,9 +296,6 @@
         </div>
     </main>
 
-    {{-- ========================================= --}}
-    {{-- 🌊 STYLE SYSTEM: LIGHT MALDIVES OCEAN --}}
-    {{-- ========================================= --}}
     <style>
     .ocean-light-bg {
         position: absolute;
@@ -302,7 +312,6 @@
         100% { background-position: 0% 50%; }
     }
 
-    /* Tạo lớp vân sóng nước lấp lánh nhẹ nhàng phía sau */
     .ocean-light-bg::before {
         content: "";
         position: absolute;
@@ -327,7 +336,6 @@
         color: #0891b2 !important;
     }
     
-    /* Đồng bộ màu icon cuốn lịch picker của input date sang màu xanh cyan */
     input[type="date"]::-webkit-calendar-picker-indicator {
         background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%230891b2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
         cursor: pointer;
@@ -336,17 +344,62 @@
 
     <script>
         const price = {{ $service->price }};
-        const input = document.getElementById('quantity');
+        const isCar = {{ $isCar ? 'true' : 'false' }};
+        
+        const qtyInput = document.getElementById('quantity');
+        const startDateInput = document.getElementById('booking_date');
+        const endDateInput = document.getElementById('end_date');
         const display = document.getElementById('total-display');
 
-        if (input) {
-            input.addEventListener('input', function() {
-                let qty = parseInt(this.value) || 1;
-                if(qty < 1) qty = 1;
-                const total = price * qty;
-                display.innerText = total.toLocaleString('vi-VN') + ' đ';
+        function calculateTotal() {
+            let qty = 1;
+
+            if (isCar && startDateInput && endDateInput) {
+                const startVal = startDateInput.value;
+                const endVal = endDateInput.value;
+
+                if (startVal && endVal) {
+                    const start = new Date(startVal);
+                    const end = new Date(endVal);
+                    
+                    // Tính độ lệch mili-giây và chuyển đổi sang số ngày thuê thực tế
+                    const timeDiff = end.getTime() - start.getTime();
+                    let days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                    
+                    // Quy ước: Thuê trong ngày hoặc nhận trả cùng ngày tính tròn là 1 ngày
+                    if (days <= 0) days = 1; 
+                    
+                    qty = days;
+                    qtyInput.value = qty; // Cập nhật lại giá trị hiển thị trên ô Số lượng ngày
+                }
+            } else if (qtyInput) {
+                qty = parseInt(qtyInput.value) || 1;
+                if (qty < 1) qty = 1;
+            }
+
+            const total = price * qty;
+            display.innerText = total.toLocaleString('vi-VN') + ' đ';
+        }
+
+        // Lắng nghe sự kiện đổi số lượng áp dụng cho Vé/Tour công viên thông thường
+        if (qtyInput && !isCar) {
+            qtyInput.addEventListener('input', calculateTotal);
+        }
+
+        // Khối xử lý Logic ngày tháng riêng biệt dành cho dịch vụ Thuê Xe
+        if (isCar && startDateInput && endDateInput) {
+            startDateInput.addEventListener('change', function() {
+                // Giới hạn ngày trả xe không được nhỏ hơn ngày nhận xe vừa chọn
+                endDateInput.min = this.value;
+                
+                if (endDateInput.value && endDateInput.value < this.value) {
+                    endDateInput.value = this.value;
+                }
+                calculateTotal();
             });
+
+            endDateInput.addEventListener('change', calculateTotal);
         }
     </script>
 </body>
-</html>
+</html>     

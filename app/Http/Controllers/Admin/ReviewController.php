@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin; // 🌟 Phải thêm chữ \Admin vào đây thì mới đúng chuẩn PSR-4
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Review;
 use Illuminate\Http\Request;
@@ -64,4 +66,14 @@ class ReviewController extends Controller
 
         return redirect()->back()->with('success', '🗑️ Đã xóa bỏ đánh giá thành công khỏi hệ thống!');
     }
+    public function toggle($id)
+{
+    $review = Review::findOrFail($id);
+
+    $review->is_visible = !$review->is_visible;
+
+    $review->save();
+
+    return back()->with('success', 'Đã cập nhật trạng thái đánh giá!');
+}
 }

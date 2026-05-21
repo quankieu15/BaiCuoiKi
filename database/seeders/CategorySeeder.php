@@ -18,10 +18,17 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            Category::create([
-                'name' => $cat,
-                'slug' => Str::slug($cat)
-            ]);
+
+            // Kiểm tra slug đã tồn tại chưa
+            $slug = Str::slug($cat);
+
+            Category::updateOrCreate(
+                ['slug' => $slug], // điều kiện kiểm tra
+                [
+                    'name' => $cat,
+                    'slug' => $slug
+                ]
+            );
         }
     }
 }
