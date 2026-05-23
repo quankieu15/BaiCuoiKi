@@ -2,17 +2,20 @@
     <div class="absolute inset-0 -z-10 overflow-hidden">
         <div class="ocean-wave-bg"></div>
     </div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="flex justify-between h-20 items-center">
-            <div class="flex items-center gap-10">
-                <div class="shrink-0 flex items-center">
-                    <a href="/" class="flex items-center bg-white/70 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-sky-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
-                        <span class="text-2xl font-black tracking-wide text-blue-600 drop-shadow-sm">HKT</span>
-                        <span class="text-2xl font-black text-orange-500 border-b-4 border-orange-400 pb-0.5 ml-1 drop-shadow-sm">{{ __('TRAVEL') }}</span>
-                    </a>
-                </div>
-
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="flex justify-between h-20 items-center" style="display: flex; justify-content: space-between; align-items: center; height: 80px;">
+        <div class="flex items-center gap-10" style="display: flex; align-items: center; gap: 40px;">
+            <div class="shrink-0 flex items-center" style="display: flex; align-items: center; flex-shrink: 0;">
+                
+                <a href="/" style="display: inline-flex; align-items: center; background-color: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 10px 20px; border-radius: 16px; border: 1px solid #e0f2fe; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); text-decoration: none; transition: all 0.3s ease;">
+                    
+                    <span style="font-size: 24px; font-weight: 900; color: #2563eb; letter-spacing: 0.05em; line-height: 1; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">HKT</span>
+                    
+                    <span style="font-size: 24px; font-weight: 900; color: #f97316; border-bottom: 4px solid #e76824; padding-bottom: 2px; margin-left: 6px; line-height: 1; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">TRAVEL</span>
+                
+                </a>
+    
+            </div>
                 {{-- ======================================================= --}}
                 {{-- KHU VỰC ĐIỀU HƯỚNG DESKTOP (OCEAN NAV WRAPPER)          --}}
                 {{-- ======================================================= --}}

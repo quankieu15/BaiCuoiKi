@@ -286,8 +286,8 @@
                                 {{-- Phần giá & Nút chuyển hướng --}}
                                 <div class="flex items-center justify-between pt-1.5 border-t border-slate-100">
                                     <div>
-                                        <span class="text-[10px] font-black text-rose-500 font-mono">
-                                            {{ number_format($item->price) }}đ
+                                        <span class="text-[15px] font-black text-rose-500 font-mono">
+                                            {{ number_format($item->price) }}VND
                                         </span>
                                     </div>
                                     
