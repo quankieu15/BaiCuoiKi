@@ -69,18 +69,47 @@ class OrderController extends Controller
     /**
      * Hiển thị lịch sử đặt tour/khách sạn của chính User
      */
+/**
+     * Hiển thị lịch sử đặt tour/khách sạn của chính User kèm dịch vụ tương tự
+     */
     public function userOrders()
     {
-        // Lấy toàn bộ đơn hàng của user đang đăng nhập kèm thông tin dịch vụ
+        // 1. Lấy toàn bộ đơn hàng của user đang đăng nhập kèm thông tin dịch vụ
         $orders = Order::where('user_id', auth()->id())
                        ->with('service')
                        ->latest()
                        ->get();
 
-        // Trả về trang dashboard của user
-        return view('dashboard', compact('orders'));
-    }
+        // 2. Tìm dịch vụ của đơn hàng gần nhất mà khách đã đặt
+        $lastOrder = $orders->first(); // Vì có ->latest() phía trên nên đơn mới nhất nằm đầu tiên
+        $lastService = $lastOrder?->service;
 
+        if ($lastService && isset($lastService->type)) {
+            // Nếu đã từng đặt: Gợi ý các dịch vụ CÙNG LOẠI (khách sạn, tour trong nước, tour nước ngoài...)
+            // và loại trừ dịch vụ mà họ vừa mới đặt ra để tránh trùng lặp
+            $suggestedServices = \App\Models\Service::where('type', $lastService->type)
+                ->where('id', '!=', $lastService->id)
+                ->take(4)
+                ->get();
+
+            // Trường hợp nếu trong danh mục đó không đủ 4 cái khác, lấy thêm dịch vụ mới nhất lấp vào
+            if ($suggestedServices->count() < 4) {
+                $needed = 4 - $suggestedServices->count();
+                $extraServices = \App\Models\Service::where('type', '!=', $lastService->type)
+                    ->latest()
+                    ->take($needed)
+                    ->get();
+                $suggestedServices = $suggestedServices->concat($extraServices);
+            }
+        } else {
+            // Nếu đây là tài khoản mới tinh (chưa đặt gì): Lấy 4 dịch vụ mới nhất bất kỳ lấp chỗ trống
+            $suggestedServices = \App\Models\Service::latest()->take(4)->get();
+        }
+
+        // 3. Bắn cả 2 biến sang file view 'dashboard'
+        return view('dashboard', compact('orders', 'suggestedServices'));
+    }
+    
     /**
      * Xử lý User upload ảnh hóa đơn chuyển khoản (Payment Proof)
      */

@@ -102,21 +102,21 @@
                         @if(auth()->user()->role === 'admin')
 
                             <a href="{{ route('admin.dashboard') }}"
-                               class="text-sm font-extrabold text-slate-700 hover:text-sky-600 transition">
+                              class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-md transition-all duration-300 hover:scale-105">
                                 Trang Admin
                             </a>
 
                         @elseif(auth()->user()->role === 'partner')
 
                             <a href="{{ route('partner.dashboard') }}"
-                               class="text-sm font-extrabold text-slate-700 hover:text-sky-600 transition">
+                               class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-md transition-all duration-300 hover:scale-105">
                                 Trang Đối Tác
                             </a>
 
                         @else
 
                             <a href="{{ route('dashboard') }}"
-                               class="text-sm font-extrabold text-slate-700 hover:text-sky-600 transition">
+                               class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl shadow-md transition-all duration-300 hover:scale-105">
                                 Hồ sơ của tôi
                             </a>
 
@@ -324,21 +324,30 @@
                             📍 {{ $service->location }}
                         </span>
 
-                        {{-- Tag phân loại --}}
-                        <span class="absolute top-4 right-4 text-[10px] px-3 py-1.5 rounded-xl font-extrabold tracking-wider uppercase shadow-md
-                            @if($service->category === 'domestic_tour') bg-blue-500 text-white
-                            @elseif($service->category === 'international_tour') bg-rose-500 text-white
-                            @elseif($service->category === 'hotel') bg-emerald-500 text-white
-                            @elseif($service->category === 'ticket') bg-amber-500 text-white
-                            @else bg-purple-500 text-white
-                            @endif">
-                            @if($service->category === 'domestic_tour') Tour Nội Địa
-                            @elseif($service->category === 'international_tour') Tour Quốc Tế
-                            @elseif($service->category === 'hotel') 🏨 Khách Sạn
-                            @elseif($service->category === 'ticket') 🎟️ Vé Tham Quan
-                            @else 🚗 Xe Tự Lái
-                            @endif
-                        </span>
+                       {{-- Tag phân loại - Đã sửa lỗi nhận diện nhầm Xe Tự Lái --}}
+<span class="absolute top-4 right-4 text-[10px] px-3 py-1.5 rounded-xl font-extrabold tracking-wider uppercase shadow-md
+    @if(in_array($service->category, ['domestic_tour', 'trong_nuoc', 'noi_dia'])) bg-blue-500 text-white
+    @elseif(in_array($service->category, ['international_tour', 'nuoc_ngoai', 'quoc_te', 'tour'])) bg-rose-500 text-white
+    @elseif($service->category === 'hotel') bg-emerald-500 text-white
+    @elseif($service->category === 'ticket') bg-amber-500 text-white
+    @elseif(in_array($service->category, ['car', 'xe_tu_lai', 'xe'])) bg-purple-500 text-white
+    @else bg-slate-500 text-white
+    @endif">
+    
+    @if(in_array($service->category, ['domestic_tour', 'trong_nuoc', 'noi_dia'])) 
+        Tour Nội Địa
+    @elseif(in_array($service->category, ['international_tour', 'nuoc_ngoai', 'quoc_te', 'tour'])) 
+        Tour Quốc Tế
+    @elseif($service->category === 'hotel') 
+        🏨 Khách Sạn
+    @elseif($service->category === 'ticket') 
+        🎟️ Vé Tham Quan
+    @elseif(in_array($service->category, ['car', 'xe_tu_lai', 'xe'])) 
+        🚗 Xe Tự Lái
+    @else 
+        📦 Loại khác ({{ $service->category }}) {{-- Mẹo nhỏ: Nếu ra loại khác nó sẽ hiện chữ gốc trong DB để ông biết đường sửa --}}
+    @endif
+</span>
                     </div>
 
                     {{-- Nội Dung Card --}}

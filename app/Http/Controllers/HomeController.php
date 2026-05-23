@@ -13,9 +13,9 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         // 🟢 Nạp sẵn mối quan hệ reviews và CHỈ LẤY ĐÁNH GIÁ ĐÃ DUYỆT (is_approved = 1) để tính số sao
-       $query = Service::with(['reviews' => function($q) {
-    $q->where('is_visible', 1);
-}]);
+        $query = Service::with(['reviews' => function($q) {
+            $q->where('is_visible', 1);
+        }]);
 
         // Lấy dữ liệu bộ lọc từ URL lên
         $location = $request->input('location');
@@ -75,22 +75,40 @@ class HomeController extends Controller
     }
 
     // 2. Xem chi tiết một Tour/Dịch vụ cụ thể
-    public function show($id)
+public function show($id)
     {
+        // 1. Lấy ra dịch vụ hiện tại mà khách đang xem
         $service = Service::findOrFail($id);
 
+        // 2. Lấy danh sách review đã được duyệt của dịch vụ này
         $approvedReviews = \App\Models\Review::where('service_id', $id)
-                                             ->where('is_approved', 1)
-                                             ->with('user')
-                                             ->latest()
-                                             ->get();
+                                            ->where('is_approved', 1)
+                                            ->with('user')
+                                            ->latest()
+                                            ->get();
 
         // Tính điểm trung bình của các review đã duyệt để hiển thị ở trang chi tiết
         $avgRating = $approvedReviews->count() > 0 ? round($approvedReviews->avg('rating'), 1) : 0;
 
-        return view('service-detail', compact('service', 'approvedReviews', 'avgRating'));
-    }
+        // 3. LOGIC GỢI Ý: Tự động lấy ra 4 dịch vụ CÙNG DANH MỤC (Sửa từ 'type' thành 'category_id')
+        $suggestedServices = Service::where('category_id', $service->category_id)
+            ->where('id', '!=', $service->id)
+            ->take(4)
+            ->get();
 
+        // Trường hợp danh mục này ít bài, không đủ 4 cái thì lấy thêm các dịch vụ mới nhất lấp vào cho đẹp grid
+        if ($suggestedServices->count() < 4) {
+            $needed = 4 - $suggestedServices->count();
+            $extraServices = Service::where('category_id', '!=', $service->category_id)
+                ->latest()
+                ->take($needed)
+                ->get();
+            $suggestedServices = $suggestedServices->concat($extraServices);
+        }
+
+        // 4. Bắn toàn bộ biến sang view 'service-detail'
+        return view('service-detail', compact('service', 'approvedReviews', 'avgRating', 'suggestedServices'));
+    }
     // 3. Xử lý đặt dịch vụ
     public function book(Request $request, $id)
     {

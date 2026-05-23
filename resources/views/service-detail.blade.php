@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $service->title }} - HKT TRAVEL</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-[#f0f9ff] text-slate-800 font-sans min-h-screen relative overflow-x-hidden">
 
@@ -132,13 +133,41 @@
                     </div>
                 </div>
 
+                {{-- Khối bản đồ Google Maps --}}
+                <div class="bg-white/70 backdrop-blur-md p-6 rounded-[24px] border border-cyan-100 shadow-sm text-left">
+                    <h2 class="text-lg font-black text-slate-800 pb-3 border-b border-slate-100 flex items-center gap-2 mb-4">
+                        🗺️ Vị trí trên bản đồ
+                    </h2>
+                    
+                    <div class="w-full h-[350px] rounded-2xl overflow-hidden border border-cyan-100 shadow-inner relative bg-slate-50">
+                        @if(!empty($service->location))
+                            <iframe 
+                                class="w-full h-full border-0"
+                                src="https://maps.google.com/maps?q={{ rawurlencode($service->location) }}&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        @else
+                            <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2">
+                                <span class="text-2xl">📍</span>
+                                <p class="text-xs font-semibold">Chưa cập nhật vị trí chính xác cho dịch vụ này.</p>
+                            </div>
+                        @endif
+                    </div>
+                    <p class="text-slate-400 text-[11px] mt-2 font-medium italic">
+                        * Địa điểm tìm kiếm tự động: <strong class="text-cyan-600">{{ $service->location }}</strong>
+                    </p>
+                </div>
+
+                {{-- Khối đánh giá bình luận --}}
                 <div class="bg-white/70 backdrop-blur-md p-6 rounded-[24px] border border-cyan-100 shadow-sm text-left">
                     <h3 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
                         💬 Đánh giá từ khách hàng
                     </h3>
-<div style="color:red; font-weight:bold;">
-    SERVICE ID: {{ $service->id }}
-</div>
+                    <div style="color:red; font-weight:bold; display:none;">
+                        SERVICE ID: {{ $service->id }}
+                    </div>
                     <div class="space-y-4 mb-8">
                         @if(isset($approvedReviews) && $approvedReviews->count() > 0)
                             @foreach($approvedReviews as $review)
@@ -156,10 +185,10 @@
                                         </div>
                                         
                                         <div class="text-amber-400 text-sm tracking-wider flex gap-0.5">
-    @for ($i = 1; $i <= ($review->rating ?? 5); $i++)
-        ⭐
-    @endfor
-</div>
+                                            @for ($i = 1; $i <= ($review->rating ?? 5); $i++)
+                                                ⭐
+                                            @endfor
+                                        </div>
                                         
                                         <p class="text-slate-600 text-sm mt-2 leading-relaxed">
                                             {{ $review->comment }}
@@ -208,8 +237,75 @@
                     @endauth
                 </div>
 
+                {{-- ========================================================================= --}}
+                {{-- KHỐI GỢI Ý DỊCH VỤ TƯƠNG TỰ (MỚI ĐƯỢC TÍCH HỢP) --}}
+                {{-- ========================================================================= --}}
+                <div class="bg-white/70 backdrop-blur-md p-6 rounded-[24px] border border-cyan-100 shadow-sm text-left space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <h3 class="font-black text-slate-800 text-base uppercase tracking-wider flex items-center gap-2">
+                            <span class="text-xl">✨</span> Có thể bạn sẽ thích
+                        </h3>
+                        <span class="text-[10px] font-black text-cyan-700 bg-cyan-100/80 px-2.5 py-1 rounded-lg border border-cyan-200 uppercase tracking-wider">
+                            Gợi ý phù hợp
+                        </span>
+                    </div>
+
+                    {{-- Grid 2 cột trên điện thoại nhỏ, 2 cột trên tablet, và 2 cột gọn gàng bên cạnh vùng nội dung chính --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        @foreach($suggestedServices as $item)
+                        <div class="group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
+                            
+                            {{-- Khung ảnh sản phẩm gợi ý --}}
+                            <div class="relative aspect-[16/10] overflow-hidden bg-slate-50">
+                                @if($item->image)
+                                    <img src="{{ asset($item->image) }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="{{ $item->title }}">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center text-slate-300 text-xs">No image</div>
+                                @endif
+                                
+                                {{-- Badge phân loại tự động dựa trên tên/loại dịch vụ --}}
+                                <span class="absolute top-2 left-2 bg-slate-900/70 backdrop-blur-sm text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+                                    @if(Str::contains(Str::lower($item->title), ['xe', 'ô tô'])) 🚗 Xe Tự Lái
+                                    @elseif(Str::contains(Str::lower($item->title), ['vé', 'vinwonders'])) 🎟️ Vé Tham Quan
+                                    @else 🏝️ Tour Du Lịch
+                                    @endif
+                                </span>
+                            </div>
+
+                            {{-- Nội dung tóm tắt --}}
+                            <div class="p-3.5 flex-1 flex flex-col justify-between space-y-2">
+                                <div>
+                                    <h4 class="font-bold text-slate-700 text-xs line-clamp-2 group-hover:text-cyan-600 transition duration-300">
+                                        {{ $item->title }}
+                                    </h4>
+                                    <p class="text-[10px] text-slate-400 mt-0.5 line-clamp-1">
+                                        📍 {{ $item->location ?? 'Toàn quốc' }}
+                                    </p>
+                                </div>
+
+                                {{-- Phần giá & Nút chuyển hướng --}}
+                                <div class="flex items-center justify-between pt-1.5 border-t border-slate-100">
+                                    <div>
+                                        <span class="text-[10px] font-black text-rose-500 font-mono">
+                                            {{ number_format($item->price) }}đ
+                                        </span>
+                                    </div>
+                                    
+                                    {{-- Nút điều hướng tải lại trang chi tiết mới --}}
+                                    <a href="{{ route('services.show', $item->id) }}" class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500 text-white shadow-sm transition hover:bg-cyan-600 active:scale-95 cursor-pointer">
+                                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                {{-- ========================================================================= --}}
+
             </div>
 
+            {{-- Sidebar cột phải (Form đặt dịch vụ cố định khi cuộn trang) --}}
             <div class="lg:col-span-1 lg:sticky lg:top-28">
                 <div class="bg-white/90 backdrop-blur-xl p-6 rounded-[28px] shadow-xl border border-cyan-100 space-y-6">
                     
@@ -362,15 +458,13 @@
                     const start = new Date(startVal);
                     const end = new Date(endVal);
                     
-                    // Tính độ lệch mili-giây và chuyển đổi sang số ngày thuê thực tế
                     const timeDiff = end.getTime() - start.getTime();
                     let days = Math.ceil(timeDiff / (1000 * 3600 * 24));
                     
-                    // Quy ước: Thuê trong ngày hoặc nhận trả cùng ngày tính tròn là 1 ngày
                     if (days <= 0) days = 1; 
                     
                     qty = days;
-                    qtyInput.value = qty; // Cập nhật lại giá trị hiển thị trên ô Số lượng ngày
+                    qtyInput.value = qty; 
                 }
             } else if (qtyInput) {
                 qty = parseInt(qtyInput.value) || 1;
@@ -381,15 +475,12 @@
             display.innerText = total.toLocaleString('vi-VN') + ' đ';
         }
 
-        // Lắng nghe sự kiện đổi số lượng áp dụng cho Vé/Tour công viên thông thường
         if (qtyInput && !isCar) {
             qtyInput.addEventListener('input', calculateTotal);
         }
 
-        // Khối xử lý Logic ngày tháng riêng biệt dành cho dịch vụ Thuê Xe
         if (isCar && startDateInput && endDateInput) {
             startDateInput.addEventListener('change', function() {
-                // Giới hạn ngày trả xe không được nhỏ hơn ngày nhận xe vừa chọn
                 endDateInput.min = this.value;
                 
                 if (endDateInput.value && endDateInput.value < this.value) {
@@ -402,4 +493,4 @@
         }
     </script>
 </body>
-</html>     
+</html> 

@@ -93,40 +93,42 @@ Route::middleware('auth')->group(function () {
     });
 
 
-    /*
-    |------------------------------------------
-    | PARTNER AREA (Phân hệ Đối tác)
-    |------------------------------------------
-    */
-    Route::middleware('role:partner')->prefix('partner')->group(function () {
+  /*
+        |------------------------------------------
+        | PARTNER AREA (Phân hệ Đối tác)
+        |------------------------------------------
+        */
+        Route::middleware('role:partner')->prefix('partner')->group(function () {
+           Route::get('/analytics', [App\Http\Controllers\Partner\ServiceController::class, 'analytics'])->name('partner.analytics');
+            Route::get('/dashboard', [PartnerOrderController::class, 'partnerDashboard'])
+                ->name('partner.dashboard');
 
-        Route::get('/dashboard', [PartnerOrderController::class, 'partnerDashboard'])
-            ->name('partner.dashboard');
+            Route::delete('/services/bulk-delete', [PartnerServiceController::class, 'bulkDelete'])
+                ->name('partner.services.bulkDelete');
 
-        Route::delete('/services/bulk-delete', [PartnerServiceController::class, 'bulkDelete'])
-            ->name('partner.services.bulkDelete');
+            // Bổ sung 'show' vào đây để tránh trùng tên với trang chi tiết bên ngoài
+            Route::resource('services', PartnerServiceController::class)->names([
+                'index' => 'partner.services.index',
+                'create' => 'partner.services.create',
+                'store' => 'partner.services.store',
+                'show' => 'partner.services.show', // 🌟 THÊM DÒNG NÀY VÀO ĐÂY
+                'edit' => 'partner.services.edit',
+                'update' => 'partner.services.update',
+                'destroy' => 'partner.services.destroy',
+            ]);
 
-        Route::resource('services', PartnerServiceController::class)->names([
-            'index' => 'partner.services.index',
-            'create' => 'partner.services.create',
-            'store' => 'partner.services.store',
-            'edit' => 'partner.services.edit',
-            'update' => 'partner.services.update',
-            'destroy' => 'partner.services.destroy',
-        ]);
+            Route::get('/orders', [PartnerOrderController::class, 'index'])
+                ->name('partner.orders.index');
 
-        Route::get('/orders', [PartnerOrderController::class, 'index'])
-            ->name('partner.orders.index');
+            Route::put('/orders/{id}/status', [PartnerOrderController::class, 'updateStatus'])
+                ->name('partner.orders.updateStatus');
 
-        Route::put('/orders/{id}/status', [PartnerOrderController::class, 'updateStatus'])
-            ->name('partner.orders.updateStatus');
+            Route::get('/feedbacks', [FeedbackController::class, 'partnerIndex'])
+                ->name('partner.feedbacks.index');
 
-        Route::get('/feedbacks', [FeedbackController::class, 'partnerIndex'])
-            ->name('partner.feedbacks.index');
-
-        Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy'])
-            ->name('partner.feedbacks.destroy');
-    });
+            Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy'])
+                ->name('partner.feedbacks.destroy');
+        });
 
 
     /*

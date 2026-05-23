@@ -50,21 +50,21 @@
 
             <a href="{{ route('pages.tintuc') }}"
                class="hover:text-sky-600 hover:bg-white/40 px-2 py-1 rounded-md transition-all duration-200">
-                Tin tức
+                📰Tin tức
             </a>
 
             <span class="text-sky-400 text-[10px]">•</span>
 
             <a href="{{ route('pages.gioithieu') }}"
                class="text-sky-700 bg-white/50 px-2 py-1 rounded-md">
-                Giới thiệu
+                🌊Giới thiệu
             </a>
 
             <span class="text-sky-400 text-[10px]">•</span>
 
             <a href="{{ route('pages.lienhe') }}"
-               class="hover:text-sky-600 hover:bg-white/40 px-2 py-1 rounded-md transition-all duration-200">
-                Liên hệ
+               class="hover:text-sky-600 hover:bg-white/40 px-2 py-1 rounded-md transition-all duration-200">       
+               📞Liên hệ
             </a>
 
         </div>
@@ -122,7 +122,7 @@
             Đồ án cuối kỳ
         </span>
 
-        <h1 class="text-3xl md:text-5xl font-black text-sky-950 uppercase tracking-tight">
+        <h1 class="text-4xl md:text-5xl font-black text-sky-950 uppercase tracking-tight">
             Hệ Thống Du Lịch Thông Minh HKT TRAVEL
         </h1>
 

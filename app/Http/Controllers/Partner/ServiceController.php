@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\Category;
 use App\Models\Hotel;
+use App\Models\Order; // 🟢 ĐÃ ĐƯA LÊN ĐẦU FILE CHUẨN CHỈ
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB; // 🟢 ĐÃ ĐƯA LÊN ĐẦU FILE CHUẨN CHỈ
 
 class ServiceController extends Controller
 {
@@ -96,7 +98,7 @@ class ServiceController extends Controller
 
         $services = $query->get();
 
-        return view('partner.services.index', compact('services'));
+        return view('partner.services.index', compact('services', 'type'));
     }
 
     // 2. Giao diện thêm mới dịch vụ
@@ -279,5 +281,51 @@ class ServiceController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Đã xóa toàn bộ các dịch vụ được chọn thành công!');
+    }
+
+  // 8. Thống kê & Doanh thu dành riêng cho Đối tác (Đã chuẩn hóa font chữ DB)
+    public function analytics()
+    {
+        $userId = auth()->id();
+
+        // 1. Lấy danh sách ID dịch vụ thuộc quyền sở hữu của đối tác này
+        $partnerServiceIds = Service::where('user_id', $userId)->pluck('id')->toArray();
+
+        // 2. MẢNG TRẠNG THÁI THÀNH CÔNG: Bao quát toàn bộ trường hợp chữ hoa, chữ thường, tiếng Việt có dấu
+        $successStatuses = [
+            'completed', 'hoan_thanh', 'success', 'approved', 
+            'Đã duyệt', 'đã duyệt', 'da_duyet', 'DA_DUYET', 'Đfont ĐÃ DUYỆT', 'Thành công', 'thành công'
+        ];
+
+        // 3. Tổng doanh thu từ các đơn hàng thành công của đối tác này
+        $totalRevenue = DB::table('orders')
+            ->whereIn('service_id', $partnerServiceIds)
+            ->whereIn('status', $successStatuses)
+            ->sum('total_price');
+
+        // 4. Tổng số đơn đặt thành công
+        $totalOrders = DB::table('orders')
+            ->whereIn('service_id', $partnerServiceIds)
+            ->whereIn('status', $successStatuses)
+            ->count();
+
+        // 5. Tổng số dịch vụ đang sở hữu
+        $totalServices = count($partnerServiceIds);
+
+        // 6. Lấy danh sách 5 đơn hàng mới nhất của đối tác
+        $recentOrders = DB::table('orders')
+            ->join('services', 'orders.service_id', '=', 'services.id')
+            ->select('orders.*', 'services.title as service_title')
+            ->whereIn('orders.service_id', $partnerServiceIds)
+            ->orderBy('orders.created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('partner.services.analytics', compact(
+            'totalRevenue', 
+            'totalOrders', 
+            'totalServices', 
+            'recentOrders'
+        ));
     }
 }
