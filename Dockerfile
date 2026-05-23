@@ -10,5 +10,5 @@ ENV WEB_DOCUMENT_ROOT=/app/public
 ENV APP_ENV=production
 ENV APP_DEBUG=false
 RUN chown -R application:application /app/storage /app/bootstrap/cache
-RUN sed -i 's|exec /usr/bin/supervisord|php /app/artisan migrate --force \&\& exec /usr/bin/supervisord|g' /entrypoint.sh
+
 EXPOSE 80
