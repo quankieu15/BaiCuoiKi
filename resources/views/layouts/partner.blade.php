@@ -44,11 +44,17 @@
             </a>
 
             {{-- QUẢN LÝ DỊCH VỤ --}}
-            <a href="{{ route('partner.services.index') }}" 
-               class="flex items-center gap-3 px-4 py-3 rounded-2xl transition {{ request()->routeIs('partner.services.*') && !request()->routeIs('partner.analytics') ? 'bg-white text-cyan-800 shadow-lg font-black' : 'hover:bg-white/10 text-white/90' }}">
-                <i class="fa-solid fa-cubes w-5"></i>
-                <span>Quản lý dịch vụ</span>
-            </a>
+          @php
+    $partnerPendingOrders = \App\Models\Order::where('status', 'pending')
+        ->whereHas('service', function ($q) {
+            $q->where('user_id', auth()->id());
+        })
+        ->count();
+@endphp
+
+ <a href="{{ route('partner.services.index') }}" class="text-white/80 hover:text-white hover:bg-white/20 px-3 py-2.5 rounded-xl transition flex items-center gap-3 text-xs font-bold">
+                    <i class="fa-solid fa-suitcase-rolling w-5 text-center text-white/80"></i> Quản lý dịch vụ
+                </a>
 
             {{-- DOANH THU & THỐNG KÊ --}}
             <a href="{{ route('partner.analytics') }}" 

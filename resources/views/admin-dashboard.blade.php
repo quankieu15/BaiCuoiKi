@@ -37,10 +37,34 @@
                     <span>Tổng quan Partner</span>
                 </a>
                 
-                <a href="{{ route('partner.services.index') }}" class="text-white/80 hover:text-white hover:bg-white/20 px-3 py-2.5 rounded-xl transition flex items-center gap-3 text-xs font-bold">
-                    <i class="fa-solid fa-suitcase-rolling w-5 text-center text-white/80"></i> 
-                    <span>Quản lý dịch vụ</span>
-                </a>
+              @php
+    $partnerPendingOrders = \App\Models\Order::where('status', 'pending')
+        ->whereHas('service', function ($q) {
+            $q->where('user_id', auth()->id());
+        })
+        ->count();
+@endphp
+
+<a href="{{ route('partner.orders.index') }}"
+   class="relative bg-white text-[#125ba7] px-3 py-2.5 rounded-xl 
+          flex items-center justify-between text-xs font-black shadow-md">
+
+    <div class="flex items-center gap-2.5">
+        <i class="fa-solid fa-clipboard-list w-4"></i>
+        <span>Đơn đặt lịch đổ về</span>
+    </div>
+
+    @if($partnerPendingOrders > 0)
+        <span class="min-w-[22px] h-[22px] px-1
+                     flex items-center justify-center
+                     bg-red-500 text-white text-[10px]
+                     rounded-full font-black shadow
+                     animate-pulse">
+            {{ $partnerPendingOrders }}
+        </span>
+    @endif
+
+</a>
 
                 <a href="{{ route('partner.orders.index') }}" class="text-white/80 hover:text-white hover:bg-white/20 px-3 py-2.5 rounded-xl transition flex items-center gap-3 text-xs font-bold">
                     <i class="fa-solid fa-clipboard-list w-5 text-center text-white/80"></i> 

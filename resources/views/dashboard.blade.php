@@ -115,9 +115,9 @@ body {
                 </div>
 
               <h2 class="ocean-title mt-4 text-4xl font-extrabold leading-tight text-slate-800">
-    🧳 Lịch sử đặt Tour
+    🧳 Lịch sử 
     <span class="bg-gradient-to-r from-cyan-500 to-sky-600 bg-clip-text text-transparent">
-        & Khách sạn
+        đơn hàng
     </span>
 </h2>
 

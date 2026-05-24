@@ -72,17 +72,31 @@
 
             </a>
 
-            <a href="{{ route('admin.orders.index') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/20 transition">
+   <a href="{{ route('admin.orders.index') }}"
+   class="relative flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/20 transition">
 
-                <i class="fa-solid fa-clipboard-list text-white"></i>
+    <div class="relative">
+        <i class="fa-solid fa-clipboard-list text-white text-[15px]"></i>
 
-                <span class="text-white">
-                    Quản lý đặt lịch
-                </span>
+        {{-- Badge thông báo --}}
+        @php
+            $pendingOrders = \App\Models\Order::where('status', 'pending')->count();
+        @endphp
 
-            </a>
+        @if($pendingOrders > 0)
+            <span class="absolute -top-2 -right-2 min-w-[20px] h-5 px-1 flex items-center justify-center 
+                         bg-red-500 text-white text-[10px] font-black rounded-full 
+                         border-2 border-white shadow animate-pulse">
+                {{ $pendingOrders }}
+            </span>
+        @endif
+    </div>
 
+    <span class="text-white font-semibold">
+        Quản lý đặt lịch
+    </span>
+
+</a>
             <a href="{{ route('admin.users.index') }}"
                class="flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-white/20 transition">
 

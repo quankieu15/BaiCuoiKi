@@ -21,14 +21,22 @@ class DashboardController extends Controller
         $totalOrders = Order::count();
         
         // Tính tổng doanh thu hệ thống từ các đơn hàng đã được duyệt (approved)
-        $totalRevenue = Order::where('status', 'approved')->sum('total_price');
+        $totalRevenue = Order::whereIn('status', [
+    'approved',
+    'confirmed',
+    'accepted'
+])->sum('total_price');
 
         // Thống kê doanh thu theo từng tháng trong năm hiện tại (Dùng cho biểu đồ Line Chart)
         $revenueMonthly = Order::select(
             DB::raw('MONTH(created_at) as month'),
             DB::raw('SUM(total_price) as total')
         )
-        ->where('status', 'approved')
+->whereIn('status', [
+    'approved',
+    'confirmed',
+    'accepted'
+])
         ->whereYear('created_at', date('Y'))
         ->groupBy('month')
         ->orderBy('month')
@@ -47,11 +55,16 @@ class DashboardController extends Controller
             ->pluck('count', 'status')
             ->toArray();
 
-        $chartStatusData = [
-            'pending' => $statusCounts['pending'] ?? 0,
-            'approved' => $statusCounts['approved'] ?? 0,
-            'cancelled' => $statusCounts['cancelled'] ?? 0,
-        ];
+       $chartStatusData = [
+    'pending' => $statusCounts['pending'] ?? 0,
+
+    'approved' =>
+        ($statusCounts['approved'] ?? 0)
+        + ($statusCounts['confirmed'] ?? 0)
+        + ($statusCounts['accepted'] ?? 0),
+
+    'cancelled' => $statusCounts['cancelled'] ?? 0,
+];
 
         // Trả về file view admin.dashboard chuẩn cấu trúc
         return view('admin.dashboard', compact(
@@ -74,14 +87,17 @@ class DashboardController extends Controller
     }
 
     // 3. Xử lý phê duyệt đơn hàng
-    public function orderApprove($id)
-    {
-        $order = Order::findOrFail($id);
-        $order->status = 'approved'; 
-        $order->save();
+   public function orderApprove($id)
+{
+    $order = Order::findOrFail($id);
 
-        return redirect()->back()->with('success', 'Đã phê duyệt đơn đặt lịch thành công!');
-    }
+    $order->status = 'approved';
+
+    $order->save();
+
+    return redirect()->back()
+        ->with('success', 'Đã phê duyệt đơn đặt lịch thành công!');
+}
 
     // 4. Xử lý hủy đơn hàng
     public function orderCancel($id)
