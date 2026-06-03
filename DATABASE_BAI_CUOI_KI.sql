@@ -1,0 +1,1 @@
+SELECT id, name, avatar FROM users WHERE id = 3;
