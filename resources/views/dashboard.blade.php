@@ -2,7 +2,6 @@
 
 {{-- FONT SAAS --}}
 <link rel="preconnect" href="https://fonts.googleapis.com">
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -99,524 +98,350 @@ body {
 
 {{-- 1. HEADER --}}
 <x-slot name="header">
-    <div class="relative overflow-hidden rounded-[28px] border border-cyan-100 bg-white/70 p-7 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,140,255,0.10)]">
+<div class="bg-white/80 backdrop-blur-xl p-6 rounded-3xl border border-white/50 shadow-lg">
+    <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-[10px] font-extrabold text-sky-600 uppercase tracking-wider mb-2">
+                🌊 Ocean Booking System
+            </div>
+            <h2 class="text-3xl font-black text-slate-800 tracking-tight">
+                📦 LỊCH SỬ ĐƠN HÀNG
+            </h2>
+            <p class="text-sm text-slate-500 mt-2 font-medium">
+                Theo dõi trạng thái booking, thanh toán và xác nhận dịch vụ.
+            </p>
+        </div>
 
-        {{-- DECOR --}}
-        <div class="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-cyan-200/40 blur-3xl"></div>
-        <div class="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-sky-300/30 blur-3xl"></div>
-
-        <div class="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-
-            {{-- LEFT --}}
-            <div>
-
-                <div class="inline-flex items-center gap-2 rounded-full bg-sky-100 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.25em] text-sky-700 shadow-sm">
-                    🌊 Ocean Booking System
+        <div class="flex gap-3 flex-wrap">
+            <div class="bg-sky-50 border border-sky-100 rounded-2xl px-5 py-4">
+                <div class="text-[11px] uppercase font-black text-sky-500 tracking-widest">
+                    Tổng đơn
                 </div>
-
-              <h2 class="ocean-title mt-4 text-4xl font-extrabold leading-tight text-slate-800">
-    🧳 Lịch sử 
-    <span class="bg-gradient-to-r from-cyan-500 to-sky-600 bg-clip-text text-transparent">
-        đơn hàng
-    </span>
-</h2>
-
-                <p class="mt-3 text-sm font-medium text-slate-500">
-                    Theo dõi booking, thanh toán và trạng thái dịch vụ du lịch.
-                </p>
+                <div class="text-3xl font-black text-sky-700 mt-1">
+                    {{ $orders->count() }}
+                </div>
             </div>
 
-            {{-- RIGHT STATS --}}
-            <div class="flex flex-wrap gap-3">
-
-                <div class="rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 px-6 py-4 text-black shadow-lg">
-                    <div class="text-[11px] font-black uppercase tracking-widest opacity-90">
-                        📦 Tổng đơn
-                    </div>
-
-                    <div class="mt-1 text-3xl font-black">
-                        {{ $orders->count() }}
-                    </div>
+            <div class="bg-emerald-50 border border-emerald-100 rounded-2xl px-5 py-4">
+                <div class="text-[11px] uppercase font-black text-emerald-500 tracking-widest">
+                    Đã thanh toán
                 </div>
-
-                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-cyan-500 to-sky-500 px-6 py-5 text-black shadow-[0_10px_30px_rgba(0,140,255,0.25)]">
-
-    {{-- EFFECT --}}
-    <div class="absolute -right-5 -top-5 h-24 w-24 rounded-full bg-white/20 blur-2xl"></div>
-
-    <div class="relative z-10">
-
-        <div class="text-[11px] font-black uppercase tracking-[0.25em] text-cyan-100">
-            💰 Tổng đã đặt
-        </div>
-
-        <div class="mt-2 flex items-end gap-2">
-
-            <span class="text-3xl font-black leading-none">
-                {{ number_format($orders->sum('total_price')) }}
-            </span>
-
-            <span class="mb-1 text-xs font-bold uppercase tracking-widest text-cyan-100">
-                VND
-            </span>
-        </div>
-
-        <div class="mt-3 text-xs font-semibold text-cyan-50">
-            Chi phí booking tour & khách sạn
+                <div class="text-3xl font-black text-emerald-700 mt-1">
+                    {{ $orders->whereNotNull('payment_proof')->count() }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-            </div>
-        </div>
-    </div>
 </x-slot>
-{{-- BODY CONTAINER --}}
-<div class="py-10 text-slate-700">
-    <div class="max-w-7xl mx-auto px-4 space-y-8">
 
-        {{-- 2. FILTER --}}
-        <div class="bg-white/60 backdrop-blur-xl border border-white/40 rounded-2xl p-4 shadow-sm">
-            <form method="GET" class="flex gap-3">
-                <input type="text" name="search" value="{{ request('search') }}"
-                    placeholder="🔍 Tìm dịch vụ..."
-                    class="w-full px-4 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-sky-300 text-slate-900 bg-white/80">
+{{-- 3. TABLE ĐƠN HÀNG (Ép chết cứng bo góc 28px bằng CSS Inline để triệt tiêu góc vuông 90 độ) --}}
+<div class="border border-cyan-100 bg-white shadow-[0_10px_40px_rgba(0,140,255,0.08)] mb-6" 
+     style="border-radius: 28px !important; overflow: hidden !important;">
 
-                <select name="status" class="px-7 py-2 rounded-xl border border-slate-200 text-sm bg-white/80 text-slate-900 font-medium">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                    <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Accepted</option>
-                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                </select>
-
-                <button class="bg-sky-500 hover:bg-sky-600 text-black px-6 rounded-xl text-sm font-black uppercase tracking-wider shadow transition">
-                    Lọc
-                </button>
-            </form>
-        </div>
-
-        {{-- 3. TABLE ĐƠN HÀNG --}}
-        {{-- ================= OCEAN ORDER TABLE ================= --}}
-{{-- ================= CLEAN OCEAN TABLE ================= --}}
-<div class="overflow-hidden rounded-[28px] border border-cyan-100 bg-white shadow-[0_10px_40px_rgba(0,140,255,0.08)]">
-
-    {{-- HEADER --}}
-    <div class="bg-gradient-to-r from-sky-500 via-cyan-500 to-blue-500 px-6 py-5">
-
+    {{-- HEADER TABLE (Bo góc trên để khớp hoàn toàn với khung cha) --}}
+    <div class="bg-gradient-to-r from-sky-500 via-cyan-500 to-blue-500 px-6 py-5" 
+         style="border-top-left-radius: 27px !important; border-top-right-radius: 27px !important;">
         <div class="flex items-center justify-between">
-
             <div class="flex items-center gap-3">
-
                 <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 text-2xl backdrop-blur">
                     🌊
                 </div>
-
                 <div>
-                    <h3 class="text-2xl font-black text-white">
+                    <h3 class="text-2xl font-black text-black">
                         Danh sách đơn hàng
                     </h3>
-
                     <p class="text-sm text-cyan-100 font-medium">
                         Theo dõi tour & khách sạn đã đặt
                     </p>
                 </div>
             </div>
-
-            <div class="rounded-full bg-white/20 px-4 py-2 text-xs font-black text-white backdrop-blur">
-                🔄 REALTIME
-            </div>
         </div>
     </div>
 
-    {{-- TABLE --}}
-    <div class="overflow-auto custom-scroll">
+    {{-- TABLE CONTENT --}}
+    <div class="p-4 bg-white" style="border-bottom-left-radius: 27px !important; border-bottom-right-radius: 27px !important;">
+        <div class="overflow-hidden border border-slate-100 overflow-auto custom-scroll" style="border-radius: 20px !important;">
+            <table class="w-full border-separate border-spacing-0">
+                <thead class="bg-sky-50 border-b border-sky-100">
+                    <tr class="text-slate-700">
+                        <th class="px-4 py-4 text-center text-xs font-black uppercase" style="border-top-left-radius: 20px !important;">Mã</th>
+                        <th class="px-5 py-4 text-left text-xs font-black uppercase min-w-[280px]">Dịch vụ</th>
+                        <th class="px-4 py-4 text-center text-xs font-black uppercase">SL</th>
+                        <th class="px-4 py-4 text-center text-xs font-black uppercase">Ngày đặt</th>
+                        <th class="px-5 py-4 text-right text-xs font-black uppercase">Thành tiền</th>
+                        <th class="px-5 py-4 text-center text-xs font-black uppercase">Thanh toán</th>
+                        <th class="px-5 py-4 text-center text-xs font-black uppercase">Hóa đơn</th>
+                        <th class="px-5 py-4 text-left text-xs font-black uppercase">Ghi chú</th>
+                        <th class="px-5 py-4 text-center text-xs font-black uppercase" style="border-top-right-radius: 20px !important;">Trạng thái</th>
+                    </tr>
+                </thead>
 
-        <table class="w-full border-collapse">
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @forelse($orders as $order)
+                    <tr class="transition hover:bg-sky-50/60">
 
-            {{-- HEAD --}}
-            <thead class="bg-sky-50 border-b border-sky-100">
-
-                <tr class="text-slate-700">
-
-                    <th class="px-4 py-4 text-center text-xs font-black uppercase">Mã</th>
-
-                    <th class="px-5 py-4 text-left text-xs font-black uppercase min-w-[280px]">
-                        Dịch vụ
-                    </th>
-
-                    <th class="px-4 py-4 text-center text-xs font-black uppercase">
-                        SL
-                    </th>
-
-                    <th class="px-4 py-4 text-center text-xs font-black uppercase">
-                        Ngày đặt
-                    </th>
-
-                    <th class="px-5 py-4 text-right text-xs font-black uppercase">
-                        Thành tiền
-                    </th>
-
-                    <th class="px-5 py-4 text-center text-xs font-black uppercase">
-                        Thanh toán
-                    </th>
-
-                    <th class="px-5 py-4 text-center text-xs font-black uppercase">
-                        Hóa đơn
-                    </th>
-
-                    <th class="px-5 py-4 text-left text-xs font-black uppercase">
-                        Ghi chú
-                    </th>
-
-                    <th class="px-5 py-4 text-center text-xs font-black uppercase">
-                        Trạng thái
-                    </th>
-                </tr>
-            </thead>
-
-            {{-- BODY --}}
-            <tbody class="divide-y divide-slate-100 bg-white">
-
-                @forelse($orders as $order)
-
-                <tr class="transition hover:bg-sky-50/60">
-
-                    {{-- ID --}}
-                    <td class="px-4 py-5 text-center">
-
-                        <div class="font-black text-sky-600 text-lg">
-                            #{{ $order->id }}
-                        </div>
-                    </td>
-
-                    {{-- SERVICE --}}
-                    <td class="px-5 py-5">
-
-                        <div class="flex items-start gap-4">
-
-                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-100 text-3xl">
-                                🐬
+                        {{-- ID --}}
+                        <td class="px-4 py-5 text-center @if($loop->last) rounded-bl-[20px] @endif" style="@if($loop->last) border-bottom-left-radius: 20px !important; @endif">
+                            <div class="font-black text-lg" style="color: #0284c7 !important;">
+                                {{ $order->id }}
                             </div>
+                        </td>
 
-                            <div>
+                        {{-- SERVICE --}}
+                        <td class="px-5 py-5">
+                            <div class="flex flex-col gap-2">
+                                @php
+                                    $title = $order->service->title ?? 'Dịch vụ đã xóa';
+                                    $isHotel = Str::contains(Str::lower($title), ['khách sạn', 'hotel', 'resort', 'homestay', 'phòng']);
+                                @endphp
 
-                                <div class="text-sm font-black text-slate-800 leading-6">
-                                    {{ $order->service->title ?? 'Dịch vụ đã xóa' }}
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    @if($isHotel)
+                                        <span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider"
+                                              style="background-color: #F3E8FF !important; color: #6B21A8 !important; border: 1px solid #E9D5FF !important;">
+                                            🏨 Khách sạn
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider"
+                                              style="background-color: #E0F2FE !important; color: #0369A1 !important; border: 1px solid #BAE6FD !important;">
+                                            🌴 Tour Du Lịch
+                                        </span>
+                                    @endif
                                 </div>
 
-                                <div class="mt-1 text-xs font-semibold text-slate-400">
-                                    📅 {{ $order->created_at->format('d/m/Y H:i') }}
+                                <div class="text-sm font-extrabold text-slate-800 leading-snug tracking-tight max-w-[320px] break-words">
+                                    {{ $title }}
+                                </div>
+
+                                <div class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400">
+                                    <i class="fa-regular fa-clock text-[10px]"></i>
+                                    <span>Đặt lúc đơn: {{ $order->created_at->format('H:i - d/m/Y') }}</span>
                                 </div>
                             </div>
-                        </div>
-                    </td>
+                        </td>
 
-                    {{-- QUANTITY --}}
-                    <td class="px-4 py-5 text-center">
+                        {{-- QUANTITY --}}
+                        <td class="px-4 py-5 text-center">
+                            <div class="inline-block min-w-[48px] px-3 py-1.5 rounded-2xl border border-slate-100 text-center font-black" 
+                                 style="background-color: #F4F7FE !important; color: #1B254B !important;">
+                                {{ $order->quantity }}
+                            </div>
+                        </td>
 
-                        <div class="font-black text-slate-700">
-                            {{ $order->quantity }}
-                        </div>
-                    </td>
+                        {{-- DATE --}}
+                        <td class="px-4 py-5 text-center text-sm font-bold text-slate-700">
+                            {{ $order->booking_date ? \Carbon\Carbon::parse($order->booking_date)->format('d/m/Y') : '---' }}
+                        </td>
 
-                    {{-- DATE --}}
-                    <td class="px-4 py-5 text-center text-sm font-bold text-slate-600">
+                        {{-- PRICE --}}
+                        <td class="px-5 py-5 text-right">
+                            <div class="text-xl font-black tracking-tight" style="color: #FF5A00 !important;">
+                                {{ number_format($order->total_price) }}đ
+                            </div>
+                        </td>
 
-                        {{ $order->booking_date ? \Carbon\Carbon::parse($order->booking_date)->format('d/m/Y') : '---' }}
-                    </td>
+                        {{-- PAYMENT --}}
+                        <td class="px-5 py-5 text-center">
+                            @if(!$order->payment_proof)
+                            <button type="button"
+                                onclick="openPaymentModal(this)"
+                                data-id="{{ $order->id }}"
+                                data-price="{{ $order->total_price }}"
+                                data-formatted-price="{{ number_format($order->total_price) }} VND"
+                                data-route="{{ route('orders.uploadProof', $order->id) }}"
+                                class="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 px-4 py-2 text-xs font-black shadow-md shadow-blue-100 transition hover:scale-105 active:scale-95"
+                                style="color: #b58708 !important;">
+                                QR / Upload
+                            </button>
+                            @elseif(in_array(trim($order->status), ['Chờ xác nhận', 'pending']))
+                            <div class="inline-flex items-center gap-1 rounded-xl border border-amber-200 px-3 py-1.5 text-xs font-bold"
+                                 style="background-color: #FFF9E6 !important; color: #B27000 !important;">
+                                <span>⏳ Đang chờ duyệt ảnh</span>
+                            </div>
+                            @else
+                            <div class="inline-flex items-center gap-1 rounded-2xl border border-emerald-200 px-3 py-1.5 text-xs font-bold"
+                                 style="background-color: #EBFBF5 !important; color: #0A6C4A !important;">
+                                <span>✅ Đã gửi</span>
+                            </div>
+                            @endif
+                        </td>
 
-                    {{-- PRICE --}}
-                    <td class="px-5 py-5 text-right">
+                        {{-- BILL --}}
+                        <td class="px-5 py-5 text-center">
+                            @if($order->payment_proof)
+                            @php
+                                $proofPath = Str::contains($order->payment_proof, 'public/') 
+                                    ? Storage::url($order->payment_proof) 
+                                    : asset('storage/' . $order->payment_proof);
+                            @endphp
+                            <a href="{{ $proofPath }}"
+                                target="_blank"
+                                class="inline-flex items-center gap-1.5 rounded-xl border border-sky-200 px-3 py-1.5 text-xs font-black transition"
+                                style="background-color: #E0F2FE !important; color: #0369A1 !important;">
+                                🧾 Xem hóa đơn
+                            </a>
+                            @else
+                            <span class="text-xs font-medium text-slate-400 italic">
+                                Chưa có
+                            </span>
+                            @endif
+                        </td>
 
-                        <div class="text-xl font-black text-sky-700">
-                            {{ number_format($order->total_price) }}
-                        </div>
+                        {{-- NOTE --}}
+                        <td class="px-5 py-5 text-left max-w-[180px]">
+                            <div class="text-xs font-semibold text-slate-600 line-clamp-2" title="{{ $order->note }}">
+                                {{ $order->note ?? '---' }}
+                            </div>
+                        </td>
 
-                        <div class="text-xs font-bold uppercase text-slate-400">
-                            VND
-                        </div>
-                    </td>
+                        {{-- STATUS --}}
+                        <td class="px-5 py-5 text-center @if($loop->last) rounded-br-[20px] @endif" style="@if($loop->last) border-bottom-right-radius: 20px !important; @endif">
+                            @php $statusClean = trim($order->status); @endphp
 
-                    {{-- PAYMENT --}}
-                    <td class="px-5 py-5 text-center">
-
-                        @if(!$order->payment_proof)
-
-                        <button type="button"
-                            onclick="openPaymentModal(this)"
-                            data-id="{{ $order->id }}"
-                            data-price="{{ $order->total_price }}"
-                            data-formatted-price="{{ number_format($order->total_price) }} VND"
-                            data-route="{{ route('orders.uploadProof', $order->id) }}"
-                            class="rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 px-4 py-2 text-xs font-black text-black shadow transition hover:scale-105">
-
-                            QR / Upload
-                        </button>
-
-                        @else
-
-                        <div class="rounded-xl bg-emerald-100 px-3 py-2 text-xs font-black text-emerald-700">
-                            ✅ Đã gửi
-                        </div>
-
-                        @endif
-                    </td>
-
-                    {{-- BILL --}}
-                    <td class="px-5 py-5 text-center">
-
-                        @if($order->payment_proof)
-
-                        <a href="{{ asset('storage/'.$order->payment_proof) }}"
-                            target="_blank"
-                            class="text-sm font-black text-sky-600 hover:text-sky-800">
-
-                            🧾 Xem
-                        </a>
-
-                        @else
-
-                        <span class="text-sm text-slate-400">
-                            Trống
-                        </span>
-
-                        @endif
-                    </td>
-
-                    {{-- NOTE --}}
-                    <td class="px-5 py-5 text-sm text-slate-500">
-
-                        {{ $order->note ?? '---' }}
-                    </td>
-
-                    {{-- STATUS --}}
-                    <td class="px-5 py-5 text-center">
-
-                        @if($order->status === 'pending')
-
-                        <div class="rounded-xl bg-amber-100 px-3 py-2 text-xs font-black text-amber-700">
-                            ⏳ Pending
-                        </div>
-
-                        @elseif(in_array($order->status,['confirmed','accepted','approved']))
-
-                        <div class="rounded-xl bg-sky-100 px-3 py-2 text-xs font-black text-sky-700">
-                            🌊 Confirmed
-                        </div>
-
-                        @elseif($order->status === 'completed')
-
-                        <div class="rounded-xl bg-emerald-100 px-3 py-2 text-xs font-black text-emerald-700">
-                            ✅ Completed
-                        </div>
-
-                        @else
-
-                        <div class="rounded-xl bg-rose-100 px-3 py-2 text-xs font-black text-rose-700">
-                            ❌ Cancelled
-                        </div>
-
-                        @endif
-                    </td>
-                </tr>
-
-                @empty
-
-                <tr>
-
-                    <td colspan="9" class="py-20 text-center">
-
-                        <div class="text-6xl">
-                            🌊
-                        </div>
-
-                        <div class="mt-4 text-2xl font-black text-sky-700">
-                            Chưa có đơn hàng nào
-                        </div>
-                    </td>
-                </tr>
-
-                @endforelse
-
-            </tbody>
-        </table>
+                            @if($statusClean === 'Chờ xác nhận' || $statusClean === 'pending')
+                            <div class="inline-flex items-center justify-center gap-2 rounded-full border border-[#FFEBA6] px-5 py-2 text-sm font-bold min-w-[150px]"
+                                 style="background-color: #FFF9E6 !important; color: #B27000 !important;">
+                                <span class="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black" style="background-color: #FFC107 !important; color: #ffffff !important;">🕒</span>
+                                Chờ xác nhận
+                            </div>
+                            @elseif($statusClean === 'Đã xác nhận' || in_array($statusClean, ['confirmed', 'accepted', 'approved']))
+                            <div class="inline-flex items-center justify-center gap-2 rounded-full border border-[#C6F6E5] px-5 py-2 text-sm font-bold min-w-[150px]"
+                                 style="background-color: #EBFBF5 !important; color: #0A6C4A !important;">
+                                <span class="w-2 h-2 rounded-full" style="background-color: #10B981 !important;"></span>
+                                Đã xác nhận
+                            </div>
+                            @elseif($statusClean === 'Đã hoàn thành' || $statusClean === 'completed')
+                            <div class="inline-flex items-center justify-center gap-2 rounded-full border border-emerald-200 px-5 py-2 text-sm font-bold min-w-[150px]"
+                                 style="background-color: #EBFBF5 !important; color: #0A6C4A !important;">
+                                <span class="w-2 h-2 rounded-full" style="background-color: #10B981 !important;"></span>
+                                Đã hoàn thành
+                            </div>
+                            @else
+                            <div class="inline-flex items-center justify-center gap-2 rounded-full border border-[#FDE8E8] px-5 py-2 text-sm font-bold min-w-[150px]"
+                                 style="background-color: #FDF2F2 !important; color: #9B1C1C !important;">
+                                <span class="w-2 h-2 rounded-full" style="background-color: #E53E3E !important;"></span>
+                                Đã hủy
+                            </div>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="9" class="py-20 text-center" style="border-bottom-left-radius: 20px !important; border-bottom-right-radius: 20px !important;">
+                            <div class="text-6xl">🌊</div>
+                            <div class="mt-4 text-2xl font-black text-sky-700">
+                                Chưa có đơn hàng nào
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-        {{-- 4. DASHBOARD THỐNG KÊ PHỤ --}}
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1">
-                <div class="text-xs font-bold text-slate-500">📊 Tổng đơn</div>
-                <div class="text-3xl font-extrabold text-sky-600 mt-1">{{ $orders->count() }}</div>
-            </div>
+{{-- 4. DASHBOARD THỐNG KÊ PHỤ --}}
+<div class="flex gap-5 w-full">
+    <div class="flex-1 bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1">
+        <div class="text-xs font-bold text-slate-500">📊 Tổng đơn</div>
+        <div class="text-3xl font-extrabold text-sky-600 mt-1">{{ $orders->count() }}</div>
+    </div>
 
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1">
-                <div class="text-xs font-bold text-slate-500">⏳ Chờ duyệt</div>
-                <div class="text-3xl font-extrabold text-amber-500 mt-1">{{ $orders->where('status','pending')->count() }}</div>
-            </div>
+    <div class="flex-1 bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1">
+        <div class="text-xs font-bold text-slate-500">⏳ Chờ duyệt</div>
+        <div class="text-3xl font-extrabold text-amber-500 mt-1">{{ $orders->where('status','pending')->count() }}</div>
+    </div>
 
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1">
-                <div class="text-xs font-bold text-slate-500">✅ Hoàn thành</div>
-                <div class="text-3xl font-extrabold text-emerald-500 mt-1">{{ $orders->where('status','completed')->count() }}</div>
-            </div>
+    <div class="flex-1 bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1">
+        <div class="text-xs font-bold text-slate-500">✅ Hoàn thành</div>
+        <div class="text-3xl font-extrabold text-emerald-500 mt-1">{{ $orders->where('status','completed')->count() }}</div>
+    </div>
 
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1">
-                <div class="text-xs font-bold text-slate-500">💳 Đã thanh toán</div>
-                <div class="text-3xl font-extrabold text-cyan-600 mt-1">
-                    {{ $orders->whereNotNull('payment_proof')->count() }}
-                </div>
-            </div>
-        </div>
-
-       
+    <div class="flex-1 bg-white/60 backdrop-blur-xl border border-white/50 rounded-2xl p-5 shadow-sm hover:shadow-xl transition hover:-translate-y-1">
+        <div class="text-xs font-bold text-slate-500">💳 Đã thanh toán</div>
+        <div class="text-3xl font-extrabold text-cyan-600 mt-1">{{ $orders->whereNotNull('payment_proof')->count() }}</div>
+    </div>
+</div>
 
 {{-- ================= PAYMENT MODAL PREMIUM ================= --}}
-<div id="global-payment-modal"
-    class="fixed inset-0 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4 z-[999999999]">
-
-    {{-- CARD --}}
-    <div
-        class="relative w-full max-w-[360px] overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.45)]">
-
+<div id="global-payment-modal" class="fixed inset-0 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4 z-[999999999]">
+    <div class="relative w-full max-w-[360px] overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.45)]">
         {{-- DECOR --}}
         <div class="absolute -top-24 -right-24 h-48 w-48 rounded-full bg-cyan-200/40 blur-3xl"></div>
         <div class="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-sky-200/40 blur-3xl"></div>
 
         {{-- CONTENT --}}
         <div class="relative p-5">
-
             {{-- CLOSE --}}
-            <button type="button"
-                onclick="closePaymentModal()"
+            <button type="button" onclick="closePaymentModal()"
                 class="absolute top-4 right-4 z-[999999] flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-black shadow-xl transition duration-200 hover:scale-110 hover:bg-red-600">
-
                 <i class="fa-solid fa-xmark text-lg text-black"></i>
             </button>
 
             {{-- HEADER --}}
             <div class="text-center border-b border-slate-200 pb-4">
-
-                <div
-                    class="inline-flex items-center gap-1.5 rounded-full border border-cyan-300 bg-cyan-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-cyan-700 shadow-sm">
-
+                <div class="inline-flex items-center gap-1.5 rounded-full border border-cyan-300 bg-cyan-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-cyan-700 shadow-sm">
                     <span class="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
-
                     VietQR Secure Gateway
                 </div>
-
-                <h2 class="mt-3 text-xl font-black text-slate-900">
-                    Quét mã để thanh toán
-                </h2>
-
-                <p class="mt-1 text-xs font-medium text-slate-500">
-                    Hỗ trợ tất cả ngân hàng nội địa
-                </p>
+                <h2 class="mt-3 text-xl font-black text-slate-900">Quét mã để thanh toán</h2>
+                <p class="mt-1 text-xs font-medium text-slate-500">Hỗ trợ tất cả ngân hàng nội địa</p>
             </div>
 
             {{-- BODY --}}
             <div class="mt-5 space-y-5">
-
                 {{-- PRICE --}}
-                <div
-                    class="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 shadow-sm">
-
-                    <span class="text-[11px] font-black uppercase tracking-widest text-slate-500">
-                        Tổng tiền
-                    </span>
-
-                    <span id="modal-order-price"
-                        class="text-2xl font-black text-slate-900 font-mono">
-                        0 VND
-                    </span>
+                <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 shadow-sm">
+                    <span class="text-[11px] font-black uppercase tracking-widest text-slate-500">Tổng tiền</span>
+                    <span id="modal-order-price" class="text-2xl font-black text-slate-900 font-mono">0 VND</span>
                 </div>
 
                 {{-- QR --}}
                 <div class="flex justify-center">
-
-                    <div
-                        class="flex h-48 w-48 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-slate-200 bg-white p-2 shadow-lg">
-
-                        <img id="modal-qr-img"
-                            src=""
-                            alt="QR Code"
-                            class="block h-full w-full object-contain">
+                    <div class="flex h-48 w-48 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-slate-200 bg-white p-2 shadow-lg">
+                        <img id="modal-qr-img" src="" alt="QR Code" class="block h-full w-full object-contain">
                     </div>
                 </div>
 
                 {{-- STATUS --}}
-                <div
-                    class="flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 py-2.5 text-sm font-bold text-emerald-700">
-
+                <div class="flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 py-2.5 text-sm font-bold text-emerald-700">
                     <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-
                     Đang chờ thanh toán...
                 </div>
 
                 {{-- NOTE --}}
-                <div
-                    class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-center">
-
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-center">
                     <p class="text-[11px] font-semibold leading-relaxed text-amber-700">
                         Nội dung chuyển khoản phải đúng mã đơn để hệ thống duyệt tự động.
                     </p>
                 </div>
 
                 {{-- FORM --}}
-                <form id="modal-payment-form"
-                    method="POST"
-                    enctype="multipart/form-data"
-                    class="space-y-4">
-
+                <form id="modal-payment-form" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
-
                     {{-- FILE --}}
-                    <label
-                        class="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 py-4 transition hover:border-cyan-400 hover:bg-cyan-50">
-
+                    <label class="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 py-4 transition hover:border-cyan-400 hover:bg-cyan-50">
                         <div class="flex items-center gap-2">
-
                             <i class="fa-regular fa-image text-cyan-600"></i>
-
-                            <span id="file-name-hint"
-                                class="max-w-[220px] truncate text-xs font-bold text-slate-700">
-
-                                Tải hóa đơn chuyển khoản
-                            </span>
+                            <span id="file-name-hint" class="max-w-[220px] truncate text-xs font-bold text-slate-700">Tải hóa đơn chuyển khoản</span>
                         </div>
-
-                        <input type="file"
-                            name="payment_proof"
-                            required
-                            onchange="displayFileName(this)"
-                            class="hidden">
+                        <input type="file" name="payment_proof" required onchange="displayFileName(this)" class="hidden">
                     </label>
 
                     {{-- TIME --}}
-                    <div
-                        class="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3">
-
-                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                            Thời gian tạo
-                        </span>
-
-                        <span class="font-mono text-xs font-bold text-slate-700">
-                            {{ now()->format('d/m/Y H:i') }}
-                        </span>
+                    <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Thời gian tạo</span>
+                        <span class="font-mono text-xs font-bold text-slate-700">{{ now()->format('d/m/Y H:i') }}</span>
                     </div>
 
                     {{-- SUBMIT --}}
-                    <button type="submit"
-                        class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-sky-500 py-3 text-xs font-black uppercase tracking-widest text-slate-950 shadow-lg transition hover:brightness-110 active:scale-[0.98]">
-
+                    <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-sky-500 py-3 text-xs font-black uppercase tracking-widest text-slate-950 shadow-lg transition hover:brightness-110 active:scale-[0.98]">
                         <i class="fa-solid fa-circle-check"></i>
-
                         <span>Xác nhận đã chuyển khoản</span>
                     </button>
                 </form>
-
             </div>
         </div>
     </div>
@@ -625,70 +450,46 @@ body {
 {{-- ================= SCRIPT ================= --}}
 <script>
 function openPaymentModal(btn) {
-
     const id = btn.dataset.id;
     const price = btn.dataset.price;
     const formatted = btn.dataset.formattedPrice;
     const route = btn.dataset.route;
 
     document.getElementById('modal-order-price').innerText = formatted;
-
-    document.getElementById('modal-qr-img').src =
-        `https://img.vietqr.io/image/MB-1520327735200-compact.png?amount=${price}&addInfo=ORDER${id}`;
-
+    document.getElementById('modal-qr-img').src = `https://img.vietqr.io/image/MB-1520327735200-compact.png?amount=${price}&addInfo=ORDER${id}`;
     document.getElementById('modal-payment-form').action = route;
 
     const modal = document.getElementById('global-payment-modal');
-
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-
     document.body.style.overflow = 'hidden';
 }
 
 function closePaymentModal() {
-
     const modal = document.getElementById('global-payment-modal');
-
     modal.classList.remove('flex');
     modal.classList.add('hidden');
-
     document.body.style.overflow = 'auto';
 
-    document.getElementById('file-name-hint').innerText =
-        "Tải hóa đơn chuyển khoản";
-
-    document.getElementById('file-name-hint').className =
-        "max-w-[220px] truncate text-xs font-bold text-slate-700";
+    document.getElementById('file-name-hint').innerText = "Tải hóa đơn chuyển khoản";
+    document.getElementById('file-name-hint').className = "max-w-[220px] truncate text-xs font-bold text-slate-700";
 }
 
 function displayFileName(input) {
-
     const hint = document.getElementById('file-name-hint');
-
     if (input.files && input.files[0]) {
-
         hint.innerText = "📸 " + input.files[0].name;
-
-        hint.className =
-            "max-w-[220px] truncate text-xs font-black text-emerald-600";
+        hint.className = "max-w-[220px] truncate text-xs font-black text-emerald-600";
     }
 }
 
 window.addEventListener('keydown', function(e) {
-
-    if (e.key === 'Escape') {
-        closePaymentModal();
-    }
+    if (e.key === 'Escape') { closePaymentModal(); }
 });
 
-document.getElementById('global-payment-modal')
-    .addEventListener('click', function(e) {
-
-        if (e.target === this) {
-            closePaymentModal();
-        }
-    });
+document.getElementById('global-payment-modal').addEventListener('click', function(e) {
+    if (e.target === this) { closePaymentModal(); }
+});
 </script>
 
 </x-app-layout>
